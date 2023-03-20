@@ -8,26 +8,25 @@ from colorama import Fore, Back, Style
 
 def title_msg(msg_str: str, emphasize=False):
     """
-        Print the message in title format.
+    Print the message in title format.
     """
     terminal_size = shutil.get_terminal_size(fallback=(120, 50))
     columns = terminal_size[0]
-    msg_text = '[ %s ]' % msg_str
-    
+    msg_text = "[ %s ]" % msg_str
+
     if emphasize:
-        print(Fore.WHITE + Back.BLUE + Style.BRIGHT + msg_text.center(columns, '*') + Style.RESET_ALL)
+        print(Fore.WHITE + Back.BLUE + Style.BRIGHT + msg_text.center(columns, "*") + Style.RESET_ALL)
     else:
-        print(Fore.BLUE + msg_text.center(columns, '*') + Style.RESET_ALL)
+        print(Fore.BLUE + msg_text.center(columns, "*") + Style.RESET_ALL)
 
 
 def subtitle_msg(msg_str: str):
-    """ Print the message in sub-title format.
-    """
+    """Print the message in sub-title format."""
     terminal_size = shutil.get_terminal_size(fallback=(120, 50))
     columns = terminal_size[0]
-    msg_text = '{ %s }' % msg_str
+    msg_text = "{ %s }" % msg_str
 
-    print(Fore.BLUE + msg_text.center(columns, '-') + Style.RESET_ALL)
+    print(Fore.BLUE + msg_text.center(columns, "-") + Style.RESET_ALL)
 
 
 def warn_msg(msg_str: str, obj=None, emphasize=False, return_only=False):
@@ -43,11 +42,11 @@ def warn_msg(msg_str: str, obj=None, emphasize=False, return_only=False):
     """
     if obj is not None and not isinstance(obj, str):
         obj = obj.__class__.__name__
-    msg_text = '[%s] WARNING: %s' % (obj, msg_str) if obj is not None else 'WARNING: %s' % msg_str
-    
+    msg_text = "[%s] WARNING: %s" % (obj, msg_str) if obj is not None else "WARNING: %s" % msg_str
+
     if return_only:
         return msg_text
-    
+
     if emphasize:
         print(Fore.BLACK + Back.YELLOW + Style.BRIGHT + msg_text + Style.RESET_ALL)
     else:
@@ -66,10 +65,10 @@ def msg(msg_str: str, obj=None, return_only=False):
     """
     if obj is not None and not isinstance(obj, str):
         obj = obj.__class__.__name__
-    msg_text = '[%s] %s' % (obj, msg_str) if obj is not None else '%s' % msg_str
+    msg_text = "[%s] %s" % (obj, msg_str) if obj is not None else "%s" % msg_str
     if return_only:
         return msg_text
-        
+
     print(msg_text)
     return msg_text
 
@@ -90,10 +89,10 @@ def err_msg(msg_str: str, obj=None, emphasize=True, return_only=False):
     """
     if obj is not None and not isinstance(obj, str):
         obj = obj.__class__.__name__
-    msg_text = '[%s] ERROR: %s' % (obj, msg_str) if obj is not None else 'ERROR: %s' % msg_str
+    msg_text = "[%s] ERROR: %s" % (obj, msg_str) if obj is not None else "ERROR: %s" % msg_str
     if return_only:
         return msg_text
-    
+
     if emphasize:
         print(Fore.BLACK + Back.RED + Style.BRIGHT + msg_text + Style.RESET_ALL)
     else:
@@ -116,9 +115,9 @@ def file_not_exists(file_path: str, obj=None, raise_exception=True):
 
     if not os.path.exists(file_path):
         if raise_exception is False:
-            warn_msg('File not exists: %s' % file_path, obj, return_only=False)
+            warn_msg("File not exists: %s" % file_path, obj, return_only=False)
         else:
-            err_text = err_msg('File not exists: %s' % file_path, obj, return_only=True)
+            err_text = err_msg("File not exists: %s" % file_path, obj, return_only=True)
             if raise_exception:
                 raise Exception(err_text)
         return False
@@ -142,10 +141,10 @@ def notice_msg(msg_str: str, obj=None, emphasize=False, return_only=False):
     """
     if obj is not None and not isinstance(obj, str):
         obj = obj.__class__.__name__
-    msg_text = '[%s] NOTE: %s' % (obj, msg_str) if obj is not None else 'NOTE: %s' % msg_str
+    msg_text = "[%s] NOTE: %s" % (obj, msg_str) if obj is not None else "NOTE: %s" % msg_str
     if return_only:
         return msg_text
-    
+
     if emphasize:
         print(Fore.BLACK + Back.GREEN + Style.BRIGHT + msg_text + Style.RESET_ALL)
     else:
@@ -167,10 +166,10 @@ def dim_msg(msg_str: str, obj=None, return_only=False):
     """
     if obj is not None and not isinstance(obj, str):
         obj = obj.__class__.__name__
-    msg_text = '[%s] %s' % (obj, msg_str) if obj is not None else '%s' % msg_str
+    msg_text = "[%s] %s" % (obj, msg_str) if obj is not None else "%s" % msg_str
     if return_only:
         return msg_text
-        
+
     if obj is not None:
         print(Style.DIM + msg_text + Style.RESET_ALL)
     else:

@@ -21,5 +21,7 @@ def mark_corres(pred_matches, q_pos_2d, q_K, q_Tcw, ref_3d_pos, thres=5):
     return flag
 
 
-def precision_q2r(flag, ):
+def precision_q2r(
+    flag,
+):
     return flag.sum() / flag.shape[0]

@@ -6,11 +6,10 @@ import numpy as np
 
 
 class LMDBWriter(object):
-    """ Write the dataset to LMDB database
-    """
+    """Write the dataset to LMDB database"""
 
-    ''' Variables
-    '''
+    """ Variables
+    """
     __key_counts__ = 0
 
     # LMDB environment handle
@@ -42,8 +41,7 @@ class LMDBWriter(object):
 
     @staticmethod
     def __del_and_create__(lmdb_path: str):
-        """ Delete the exist lmdb database and create new lmdb database.
-        """
+        """Delete the exist lmdb database and create new lmdb database."""
         if os.path.exists(lmdb_path):
             shutil.rmtree(lmdb_path)
         os.mkdir(lmdb_path)

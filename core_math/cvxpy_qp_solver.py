@@ -5,6 +5,7 @@ import diffcp
 import torch
 from einops import asnumpy
 
+
 def solve_qp_np(K, d, compression_ratio=0.7, lambda_=1.0):
     # K to make problem DPP https://www.cvxpy.org/tutorial/advanced/index.html
     # K_data = np.random.randn(num_features, num_features)
@@ -15,11 +16,7 @@ def solve_qp_np(K, d, compression_ratio=0.7, lambda_=1.0):
         d = asnumpy(d)
 
     alpha = cp.Variable((num_features, 1))
-    constraints = [
-        cp.sum(alpha) == 1,
-        alpha >= 0,
-        alpha <= 1.0 / (compression_ratio * num_features)
-    ]
+    constraints = [cp.sum(alpha) == 1, alpha >= 0, alpha <= 1.0 / (compression_ratio * num_features)]
 
     # this expression non DPP
 
@@ -30,6 +27,7 @@ def solve_qp_np(K, d, compression_ratio=0.7, lambda_=1.0):
     alpha_ = alpha.value
     return alpha_
 
+
 class CVXPY_QP:
     def __init__(self, num_features, compression_ratio=0.1):
         self.num_features = num_features
@@ -39,14 +37,11 @@ class CVXPY_QP:
         self.d_placeholder = cp.Parameter((num_features, 1))
 
         self.alpha = cp.Variable((num_features, 1), pos=True)
-        constraints = [
-            cp.sum(self.alpha) == 1,
-            self.alpha >= 0,
-            self.alpha <= 1.0 / (compression_ratio * num_features)
-        ]
+        constraints = [cp.sum(self.alpha) == 1, self.alpha >= 0, self.alpha <= 1.0 / (compression_ratio * num_features)]
         objective = cp.Minimize(
             # this expression non DPP
-            cp.quad_form(self.alpha, self.K_placeholder) - (self.d_placeholder.T @ self.alpha)
+            cp.quad_form(self.alpha, self.K_placeholder)
+            - (self.d_placeholder.T @ self.alpha)
             # cp.sum_squares(self.K_sqrt_placeholder @ self.alpha) - (self.d_placeholder.T @ self.alpha)
         )
 
@@ -55,8 +50,8 @@ class CVXPY_QP:
     def __call__(self, K: torch.Tensor, d: torch.Tensor) -> torch.Tensor:
         device = d.device
         dtype = d.dtype
-        K = asnumpy(K[:self.num_features, :self.num_features])
-        d = asnumpy(d[:self.num_features].view(-1, 1))
+        K = asnumpy(K[: self.num_features, : self.num_features])
+        d = asnumpy(d[: self.num_features].view(-1, 1))
 
         self.d_placeholder.value = d
         self.K_placeholder.value = K
@@ -64,9 +59,9 @@ class CVXPY_QP:
         # K_sqrt = sqrtm(K)
         # self.K_sqrt_placeholder.value = K_sqrt
 
-        self.problem.solve(solver='OSQP')
+        self.problem.solve(solver="OSQP")
 
-        return (torch.from_numpy(self.alpha.value).to(device).type(dtype).squeeze(-1), )
+        return (torch.from_numpy(self.alpha.value).to(device).type(dtype).squeeze(-1),)
 
     def forward(self, rbf_kernel: torch.Tensor, dist_score: torch.Tensor) -> torch.Tensor:
         return self(rbf_kernel, dist_score)

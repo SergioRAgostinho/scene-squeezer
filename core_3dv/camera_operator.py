@@ -2,8 +2,8 @@ import numpy as np
 from numpy.linalg import inv as np_mat_inv
 
 
-''' Matrices -----------------------------------------------------------------------------------------------------------
-'''
+""" Matrices -----------------------------------------------------------------------------------------------------------
+"""
 
 
 def P_mat(K: np.ndarray, T: np.ndarray) -> np.ndarray:
@@ -32,12 +32,13 @@ def K_from_intrinsic(intrinsic: np.ndarray) -> np.ndarray:
         intrinsic matrix with 3x3 elements
 
     """
-    return np.asarray([intrinsic[0], 0, intrinsic[2],
-                       0, intrinsic[1], intrinsic[3], 0, 0, 1], dtype=np.float32).reshape(3, 3)
+    return np.asarray(
+        [intrinsic[0], 0, intrinsic[2], 0, intrinsic[1], intrinsic[3], 0, 0, 1], dtype=np.float32
+    ).reshape(3, 3)
 
 
-''' Camera Information -------------------------------------------------------------------------------------------------
-'''
+""" Camera Information -------------------------------------------------------------------------------------------------
+"""
 
 
 def Rt(T: np.ndarray) -> [np.ndarray, np.ndarray]:
@@ -100,10 +101,10 @@ def camera_center_from_P(P: np.ndarray) -> np.ndarray:
         camera center C at world coordinate system.
 
     """
-    X = np.linalg.det(np.asarray([P[:, 1],  P[:, 2], P[:, 3]]))
-    Y = -np.linalg.det(np.asarray([P[:, 0],  P[:, 2], P[:, 3]]))
-    Z = np.linalg.det(np.asarray([P[:, 0],  P[:, 1], P[:, 3]]))
-    T = -np.linalg.det(np.asarray([P[:, 0],  P[:, 1], P[:, 2]]))
+    X = np.linalg.det(np.asarray([P[:, 1], P[:, 2], P[:, 3]]))
+    Y = -np.linalg.det(np.asarray([P[:, 0], P[:, 2], P[:, 3]]))
+    Z = np.linalg.det(np.asarray([P[:, 0], P[:, 1], P[:, 3]]))
+    T = -np.linalg.det(np.asarray([P[:, 0], P[:, 1], P[:, 2]]))
     C = np.asarray([X, Y, Z]) / T
     return C
 
@@ -121,7 +122,7 @@ def camera_pose_inv(R: np.ndarray, t: np.ndarray) -> np.ndarray:
 
     """
     Rwc = R.transpose()
-    Ow = - np.dot(Rwc, t)
+    Ow = -np.dot(Rwc, t)
     Twc = np.eye(4, dtype=np.float32)
     Twc[:3, :3] = Rwc
     Twc[:3, 3] = Ow
@@ -142,11 +143,11 @@ def fov(fx: float, fy: float, h: float, w: float) -> [float, float]:
         field of view on x and y axis.
 
     """
-    return np.rad2deg(2*np.arctan(w / (2*fx))), np.rad2deg(2*np.arctan(h / (2*fy)))
+    return np.rad2deg(2 * np.arctan(w / (2 * fx))), np.rad2deg(2 * np.arctan(h / (2 * fy)))
 
 
-''' Camera Projection --------------------------------------------------------------------------------------------------
-'''
+""" Camera Projection --------------------------------------------------------------------------------------------------
+"""
 
 
 def pi(K: np.ndarray, X: np.ndarray) -> [np.ndarray, np.ndarray]:
@@ -189,8 +190,8 @@ def pi_inv(K: np.ndarray, x: np.ndarray, d: np.ndarray) -> np.ndarray:
     return X
 
 
-''' Camera Transform ---------------------------------------------------------------------------------------------------
-'''
+""" Camera Transform ---------------------------------------------------------------------------------------------------
+"""
 
 
 def relateive_pose(R_A: np.ndarray, t_A: np.ndarray, R_B: np.ndarray, t_B: np.ndarray) -> np.ndarray:

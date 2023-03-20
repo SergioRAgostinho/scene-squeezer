@@ -9,10 +9,11 @@ from SuperGluePretrainedNetwork.models.superglue import normalize_keypoints
 from dataset.common.base_data_source import ClipMeta, Pt2dObs, Pt3dObs
 from dataset.common.gt_corres_torch import *
 
+
 def dict2obs(info: dict):
     clip = ClipMeta.from_dict(info, to_numpy=False)
     pt2d_obs = Pt2dObs.from_dict(info, to_numpy=False)
-    if 'pt3d' in info:
+    if "pt3d" in info:
         pt3d_obs = Pt3dObs.from_dict(info, to_numpy=False)
     else:
         pt3d_obs = None
@@ -20,7 +21,7 @@ def dict2obs(info: dict):
 
 
 def split_info(info: dict, indices):
-    num_frames = len(info['img_names'])
+    num_frames = len(info["img_names"])
 
     split_out = dict()
     for key, items in info.items():
@@ -117,14 +118,21 @@ def r_conf(r_pt2d: Pt2dObs):
 
 
 def gen_gt_matches(self, q_info, q_idx, ref_pt3ds, q_segs=None, reproj_thres=5):
-    q_2d_pts = q_info['pt2d_pos']
-    q_Ks = q_info['K']
-    q_Tcws = q_info['Tcws']
-    q_dims = [(int(dim[0].item()), int(dim[1].item())) for dim in q_info['dims']]
+    q_2d_pts = q_info["pt2d_pos"]
+    q_Ks = q_info["K"]
+    q_Tcws = q_info["Tcws"]
+    q_dims = [(int(dim[0].item()), int(dim[1].item())) for dim in q_info["dims"]]
     q_mask = None if q_segs is None else mask_by_seg(q_segs, exclude_seg_label=[20, 80])[0]
 
-    q2r_gt = gen_gt_corres(q_2d_pts[q_idx][0], q_Ks[q_idx][0], q_Tcws[q_idx][0], q_mask[q_idx],
-                           q_dim_hw=q_dims[q_idx], ref_3d_pts=ref_pt3ds[0], reproj_dist_thres=reproj_thres)
+    q2r_gt = gen_gt_corres(
+        q_2d_pts[q_idx][0],
+        q_Ks[q_idx][0],
+        q_Tcws[q_idx][0],
+        q_mask[q_idx],
+        q_dim_hw=q_dims[q_idx],
+        ref_3d_pts=ref_pt3ds[0],
+        reproj_dist_thres=reproj_thres,
+    )
     return q2r_gt
 
 
@@ -167,21 +175,18 @@ def normalize_3dpts(pt3d_xyz):
     scale_y = pt3d_xyz[:, 1].max() - pt3d_xyz[:, 1].min()
     scale_z = pt3d_xyz[:, 2].max() - pt3d_xyz[:, 2].min()
     max_dim = max(max(scale_x, scale_y), scale_z)
-    pt3d_xyz /= (max_dim + 1e-5)
+    pt3d_xyz /= max_dim + 1e-5
     return pt3d_xyz * 2
 
 
-def get_corres_ref_2d_indices(
-        matches: torch.Tensor, r_obs3d: torch.Tensor
-) -> torch.Tensor:
+def get_corres_ref_2d_indices(matches: torch.Tensor, r_obs3d: torch.Tensor) -> torch.Tensor:
     corres_q_inds = matches[:, 0]
     corres_r_inds = matches[:, 1]
 
     sel_r_idx = index_of_elements(r_obs3d, corres_r_inds)
     valid_rows = torch.where(sel_r_idx != -1)[0]
-    sel_matches = torch.cat(
-        [corres_q_inds[valid_rows].view(-1, 1), sel_r_idx[valid_rows].view(-1, 1)], dim=1
-    ).to(r_obs3d.device)
+    sel_matches = torch.cat([corres_q_inds[valid_rows].view(-1, 1), sel_r_idx[valid_rows].view(-1, 1)], dim=1).to(
+        r_obs3d.device
+    )
 
     return sel_matches
-

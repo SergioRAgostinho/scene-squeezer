@@ -6,7 +6,7 @@ import cv2
 import numpy as np
 
 
-def colormap(tensor: torch.tensor, cmap='jet', clip_range=None, scale_each=True, chw_order=True):
+def colormap(tensor: torch.tensor, cmap="jet", clip_range=None, scale_each=True, chw_order=True):
     """
         Create colormap for each single channel input map.
 
@@ -21,13 +21,13 @@ def colormap(tensor: torch.tensor, cmap='jet', clip_range=None, scale_each=True,
         colormap tensor, dim (N, 3, H, W) if 'chw_order' is True or (N, H, W, 3)
 
     """
-    if cmap == 'gray':
+    if cmap == "gray":
         cmap_tag = cv2.COLORMAP_BONE
-    elif cmap == 'hsv':
+    elif cmap == "hsv":
         cmap_tag = cv2.COLORMAP_HSV
-    elif cmap == 'hot':
+    elif cmap == "hot":
         cmap_tag = cv2.COLORMAP_HOT
-    elif cmap == 'cool':
+    elif cmap == "cool":
         cmap_tag = cv2.COLORMAP_COOL
     else:
         cmap_tag = cv2.COLORMAP_JET
@@ -46,8 +46,7 @@ def colormap(tensor: torch.tensor, cmap='jet', clip_range=None, scale_each=True,
     # normalize
     tensor = tensor.clone()  # avoid modifying tensor in-place
     if clip_range is not None:
-        assert isinstance(clip_range, tuple), \
-            "range has to be a tuple (min, max) if specified. min and max are numbers"
+        assert isinstance(clip_range, tuple), "range has to be a tuple (min, max) if specified. min and max are numbers"
 
     def norm_ip(img, min_, max_):
         img.clamp_(min=min_, max=max_)
@@ -79,11 +78,14 @@ def colormap(tensor: torch.tensor, cmap='jet', clip_range=None, scale_each=True,
     return color_tensors.permute(0, 3, 1, 2) if chw_order else color_tensors
 
 
-def heatmap_blend(img: torch.tensor,
-                  heatmap: torch.tensor,
-                  heatmap_blend_alpha=0.5,
-                  heatmap_clip_range=None,
-                  cmap='jet', chw_order=True) -> torch.Tensor:
+def heatmap_blend(
+    img: torch.tensor,
+    heatmap: torch.tensor,
+    heatmap_blend_alpha=0.5,
+    heatmap_clip_range=None,
+    cmap="jet",
+    chw_order=True,
+) -> torch.Tensor:
     """
         Blend the colormap onto original image
 
@@ -110,10 +112,10 @@ def heatmap_blend(img: torch.tensor,
     assert H == heatmap.size(1)
     assert W == heatmap.size(2)
     assert N == heatmap.size(0)
-    assert C3 == 3                      # input image has three channel RGB
+    assert C3 == 3  # input image has three channel RGB
 
     color_map = colormap(heatmap, cmap=cmap, clip_range=heatmap_clip_range, chw_order=chw_order).to(img.device)
-    output_heat_map = img.clone()*(1.0 - heatmap_blend_alpha) + color_map * heatmap_blend_alpha
+    output_heat_map = img.clone() * (1.0 - heatmap_blend_alpha) + color_map * heatmap_blend_alpha
     return output_heat_map
 
 
@@ -126,6 +128,7 @@ class UnNormalize(object):
        >>> unorm = UnNormalize(mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225))
        >>> unorm(tensor)
     """
+
     def __init__(self, mean=(0.485, 0.456, 0.406), std=(0.229, 0.224, 0.225)):
         self.mean = mean
         self.std = std
@@ -156,7 +159,7 @@ def tensor_to_vis(t: torch.Tensor, unormalize=UnNormalize()):
 
     """
     if t.dim() == 5:
-        t = rearrange(t, 'N L C H W -> (N L) C H W')
+        t = rearrange(t, "N L C H W -> (N L) C H W")
     elif t.dim() == 3:
         t = t.unsqueeze(0)
 

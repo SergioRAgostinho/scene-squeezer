@@ -117,7 +117,7 @@ def transpose(R: torch.Tensor, t: torch.Tensor, X: torch.Tensor) -> torch.Tensor
         assert X.size(3) == 3
         keep_dim_hw = True
         N, H, W = X.shape[:3]
-        X = X.view(N, H*W, 3)
+        X = X.view(N, H * W, 3)
 
     N = R.shape[0]
     M = X.shape[1]
@@ -220,7 +220,6 @@ def relative_pose(R_A: torch.Tensor, t_A: torch.Tensor, R_B: torch.Tensor, t_B: 
     return T_AB
 
 
-
 def transform_points(T: torch.Tensor, points: torch.Tensor) -> torch.Tensor:
     """
         transform points by a transformation matrix.
@@ -243,9 +242,7 @@ def homogeneous_points(points: torch.Tensor) -> torch.Tensor:
     :param points: (B, N, 3)
     :return (B, N, 4)
     """
-    return torch.cat(
-        (points, torch.ones_like(points[..., :1])), dim=-1
-    )
+    return torch.cat((points, torch.ones_like(points[..., :1])), dim=-1)
 
 
 def to_transformation_matrix(matrix: torch.Tensor) -> torch.Tensor:
@@ -277,14 +274,14 @@ def pi(K: torch.Tensor, X: torch.Tensor, eps=1e-5) -> [torch.Tensor, torch.Tenso
     H, W = 0, 0
     if K.dim() == 2:
         keep_dim_n = True
-        K = K.unsqueeze(0)      # make dim (1, 3, 3)
+        K = K.unsqueeze(0)  # make dim (1, 3, 3)
     if X.dim() == 2:
-        X = X.unsqueeze(0)      # make dim (1, num_points, 3)
+        X = X.unsqueeze(0)  # make dim (1, num_points, 3)
     if X.dim() == 4:
         assert X.size(3) == 3
         keep_dim_hw = True
         N, H, W = X.shape[:3]
-        X = X.view(N, H*W, 3)
+        X = X.view(N, H * W, 3)
 
     assert K.size(0) == X.size(0)
     N = K.shape[0]
@@ -294,8 +291,8 @@ def pi(K: torch.Tensor, X: torch.Tensor, eps=1e-5) -> [torch.Tensor, torch.Tenso
     X_z = X[:, :, 2:3] + eps
 
     fx, fy, cx, cy = K[:, 0:1, 0:1], K[:, 1:2, 1:2], K[:, 0:1, 2:3], K[:, 1:2, 2:3]
-    u_x = (fx * X_x + cx*X_z) / X_z
-    u_y = (fy * X_y + cy*X_z) / X_z
+    u_x = (fx * X_x + cx * X_z) / X_z
+    u_y = (fy * X_y + cy * X_z) / X_z
     u = torch.cat([u_x, u_y], dim=-1)
     d = X_z
 
@@ -341,8 +338,7 @@ def reproject(Rt_cw: torch.Tensor, K: torch.Tensor, X: torch.Tensor):
 
 
 def is_in_t(uv: torch.Tensor, depth: torch.Tensor, dim_hw):
-    """ Check the point is in the image plane
-    """
+    """Check the point is in the image plane"""
     x = torch.logical_and(uv[:, 0] > 0, uv[:, 0] < dim_hw[1])
     y = torch.logical_and(uv[:, 1] > 0, uv[:, 1] < dim_hw[0])
     z = torch.logical_and(x, y)
@@ -367,11 +363,11 @@ def pi_inv(K: torch.Tensor, x: torch.Tensor, d: torch.Tensor) -> torch.Tensor:
     H, W = 0, 0
     if K.dim() == 2:
         keep_dim_n = True
-        K = K.unsqueeze(0)      # make dim (1, 3, 3)
+        K = K.unsqueeze(0)  # make dim (1, 3, 3)
     if x.dim() == 2:
-        x = x.unsqueeze(0)      # make dim (1, num_points, 3)
+        x = x.unsqueeze(0)  # make dim (1, num_points, 3)
     if d.dim() == 2:
-        d = d.unsqueeze(0)      # make dim (1, num_points, 1)
+        d = d.unsqueeze(0)  # make dim (1, num_points, 1)
 
     if x.dim() == 4:
         assert x.size(0) == d.size(0)
@@ -380,8 +376,8 @@ def pi_inv(K: torch.Tensor, x: torch.Tensor, d: torch.Tensor) -> torch.Tensor:
         assert x.size(3) == 2
         keep_dim_hw = True
         N, H, W = x.shape[:3]
-        x = x.view(N, H*W, 2)
-        d = d.view(N, H*W, 1)
+        x = x.view(N, H * W, 2)
+        d = d.view(N, H * W, 1)
 
     N = K.shape[0]
     fx, fy, cx, cy = K[:, 0:1, 0:1], K[:, 1:2, 1:2], K[:, 0:1, 2:3], K[:, 1:2, 2:3]
@@ -419,12 +415,12 @@ def x_2d_normalize(h, w, x_2d):
 
     Args:
         x_2d: coordinates mapping, (N, H * W, 2)
-    
+
     Returns:
         x_2d: coordinates mapping, (N, H * W, 2), with the range from (-1, 1)
 
     """
-    x_2d[:, :, 0] = (x_2d[:, :, 0] / (float(w) - 1.0))
-    x_2d[:, :, 1] = (x_2d[:, :, 1] / (float(h) - 1.0))
+    x_2d[:, :, 0] = x_2d[:, :, 0] / (float(w) - 1.0)
+    x_2d[:, :, 1] = x_2d[:, :, 1] / (float(h) - 1.0)
     x_2d = x_2d * 2.0 - 1.0
     return x_2d

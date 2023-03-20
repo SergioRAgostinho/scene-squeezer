@@ -10,6 +10,7 @@ class MatrixSquareRoot(Function):
     NOTE: matrix square root is not differentiable for matrices with
           zero eigenvalues.
     """
+
     @staticmethod
     def forward(ctx, input):
         m = input.detach().cpu().numpy().astype(np.float_)
@@ -21,7 +22,7 @@ class MatrixSquareRoot(Function):
     def backward(ctx, grad_output):
         grad_input = None
         if ctx.needs_input_grad[0]:
-            sqrtm, = ctx.saved_tensors
+            (sqrtm,) = ctx.saved_tensors
             sqrtm = sqrtm.data.cpu().numpy().astype(np.float_)
             gm = grad_output.data.cpu().numpy().astype(np.float_)
 
@@ -40,6 +41,7 @@ sqrtm = MatrixSquareRoot.apply
 
 def main():
     from torch.autograd import gradcheck
+
     k = torch.randn(20, 10).double()
     # Create a positive definite matrix
     pd_mat = (k.t().matmul(k)).requires_grad_()
@@ -47,6 +49,5 @@ def main():
     print(test)
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
-

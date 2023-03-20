@@ -19,11 +19,7 @@ def get_qp_layer(num_features, compression_ratio=0.7):
     K_sqrt = cp.Parameter((num_features, num_features))
 
     d = cp.Parameter((num_features, 1))
-    constraints = [
-        cp.sum(alpha) == 1,
-        alpha >= 0,
-        alpha <= 1.0 / (compression_ratio * num_features)
-    ]
+    constraints = [cp.sum(alpha) == 1, alpha >= 0, alpha <= 1.0 / (compression_ratio * num_features)]
 
     # this expression non DPP
     quad_term = cp.sum_squares(K_sqrt @ alpha)
@@ -48,24 +44,14 @@ class QPLayer(nn.Module):
 
         kpt_num = 500 if self.debug else 600
 
-        self.qp_max_input_keypoints = from_meta(
-            self.args, 'qp_max_input_keypoints', default=kpt_num
-        )
-        self.qp_compression_ratio = from_meta(
-            self.args, 'qp_compression_ratio', default=0.7
-        )
-        self.qp_distinctiveness_weight = from_meta(
-            self.args, 'qp_distinctiveness_weight', default=500.0
-        )
-        self.qp_sqrtm_iters = from_meta(
-            self.args, 'qp_sqrtm_iters', default=15
-        )
-        self.qp_solver_max_iters = from_meta(
-            self.args, 'qp_solver_max_iters', default=1000
-        )
+        self.qp_max_input_keypoints = from_meta(self.args, "qp_max_input_keypoints", default=kpt_num)
+        self.qp_compression_ratio = from_meta(self.args, "qp_compression_ratio", default=0.7)
+        self.qp_distinctiveness_weight = from_meta(self.args, "qp_distinctiveness_weight", default=500.0)
+        self.qp_sqrtm_iters = from_meta(self.args, "qp_sqrtm_iters", default=15)
+        self.qp_solver_max_iters = from_meta(self.args, "qp_solver_max_iters", default=1000)
 
         # threshold of QP solution to be considered selected
-        self.pt_sel_thres = 1. / (self.qp_max_input_keypoints * self.qp_compression_ratio)
+        self.pt_sel_thres = 1.0 / (self.qp_max_input_keypoints * self.qp_compression_ratio)
         # small number subtracted to avoid rounding error invalidating all points
         self.pt_sel_thres -= 1e-6
 
@@ -89,8 +75,8 @@ class QPLayer(nn.Module):
         return rbf_kernel
 
     def forward(self, dist_score: torch.Tensor, rbf_kernel: torch.Tensor) -> torch.Tensor:
-        assert(dist_score.shape[0] == rbf_kernel.shape[0])
-        assert(dist_score.shape[0] == rbf_kernel.shape[1])
+        assert dist_score.shape[0] == rbf_kernel.shape[0]
+        assert dist_score.shape[0] == rbf_kernel.shape[1]
 
         # TODO:
         # if the points are padded or clipped, the compression ratio won't hold
@@ -107,42 +93,42 @@ class QPLayer(nn.Module):
         # pad to num of keypoints
         if dist_score_subset.shape[0] < self.qp_max_input_keypoints:
             pad_size = self.qp_max_input_keypoints - dist_score_subset.shape[0]
-            dist_score_subset = torch.cat((
-                dist_score_subset,
-                torch.zeros(pad_size, dtype=dist_score.dtype, device=dist_score.device)
-            ))
+            dist_score_subset = torch.cat(
+                (dist_score_subset, torch.zeros(pad_size, dtype=dist_score.dtype, device=dist_score.device))
+            )
             rbf_kernel_tmp = torch.zeros(
-                self.qp_max_input_keypoints, self.qp_max_input_keypoints, 3,
-                dtype=rbf_kernel_subset.dtype, device=rbf_kernel_subset.device
+                self.qp_max_input_keypoints,
+                self.qp_max_input_keypoints,
+                3,
+                dtype=rbf_kernel_subset.dtype,
+                device=rbf_kernel_subset.device,
             )
             rbf_kernel_tmp[:num_keypoints, :num_keypoints] = rbf_kernel_subset
             rbf_kernel_subset = rbf_kernel_tmp
         else:
             pad_size = 0
 
-        rbf_kernel_sqrt, _ = sqrt_newton_schulz_autograd(rbf_kernel_subset.unsqueeze(0), 
-                                                         numIters=20, dtype=rbf_kernel_subset.dtype)
+        rbf_kernel_sqrt, _ = sqrt_newton_schulz_autograd(
+            rbf_kernel_subset.unsqueeze(0), numIters=20, dtype=rbf_kernel_subset.dtype
+        )
 
         try:
 
-            solution, = self.qp_layer(
-                rbf_kernel_sqrt.squeeze(0), dist_score_subset.unsqueeze(-1),
-                solver_args={"max_iters": self.qp_solver_max_iters}
+            (solution,) = self.qp_layer(
+                rbf_kernel_sqrt.squeeze(0),
+                dist_score_subset.unsqueeze(-1),
+                solver_args={"max_iters": self.qp_solver_max_iters},
             )
 
         except diffcp.cone_program.SolverError:
             print(rbf_kernel_sqrt.shape)
 
-
         # clip
-        solution = solution.squeeze(0)[:dist_score.shape[0]]
+        solution = solution.squeeze(0)[: dist_score.shape[0]]
 
         # pad
         if solution.shape[0] < dist_score.shape[0]:
             pad_size = dist_score.shape[0] - solution.shape[0]
-            solution = torch.cat((
-                solution,
-                torch.zeros(pad_size, dtype=solution.dtype, device=solution.device)
-            ))
+            solution = torch.cat((solution, torch.zeros(pad_size, dtype=solution.dtype, device=solution.device)))
 
         return solution

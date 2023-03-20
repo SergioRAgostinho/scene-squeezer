@@ -24,49 +24,48 @@ import torch.nn as nn
 
 
 def argmin_khot(score_mat, k):
-  with torch.no_grad():
-    if k > score_mat.shape[1]:
-      k = score_mat.shape[1]
-    _, topk_idx = torch.topk(score_mat, k, largest=False, dim=1)
-    out_mask = torch.zeros(score_mat.shape).to(score_mat.device)
-    ones = torch.ones(topk_idx.shape).to(score_mat.device)
-    out_mask.scatter_(1, topk_idx, ones)
-  return out_mask
+    with torch.no_grad():
+        if k > score_mat.shape[1]:
+            k = score_mat.shape[1]
+        _, topk_idx = torch.topk(score_mat, k, largest=False, dim=1)
+        out_mask = torch.zeros(score_mat.shape).to(score_mat.device)
+        ones = torch.ones(topk_idx.shape).to(score_mat.device)
+        out_mask.scatter_(1, topk_idx, ones)
+    return out_mask
 
 
 class ColumnTopkFunc(torch.autograd.Function):
+    @staticmethod
+    def forward(ctx, score_mat, k, noise):
+        ctx.k = k
+        ctx.noise = noise
+        khot = argmin_khot(-score_mat, k)
+        ctx.save_for_backward(score_mat, khot)
+        return khot
 
-  @staticmethod
-  def forward(ctx, score_mat, k, noise):
-    ctx.k = k
-    ctx.noise = noise
-    khot = argmin_khot(-score_mat, k)
-    ctx.save_for_backward(score_mat, khot)
-    return khot
-
-  @staticmethod
-  def backward(ctx, grad_output):
-    score_mat, ctx_khot = ctx.saved_tensors
-    k, noise = ctx.k, ctx.noise
-    with torch.no_grad():
-      score_perturb = -score_mat + grad_output * noise
-      new_khot = argmin_khot(score_perturb, k)
-      grad = (ctx_khot - new_khot) / noise
-      return grad, None, None
+    @staticmethod
+    def backward(ctx, grad_output):
+        score_mat, ctx_khot = ctx.saved_tensors
+        k, noise = ctx.k, ctx.noise
+        with torch.no_grad():
+            score_perturb = -score_mat + grad_output * noise
+            new_khot = argmin_khot(score_perturb, k)
+            grad = (ctx_khot - new_khot) / noise
+            return grad, None, None
 
 
 def soft_topk(score_mat, k, noise):
-  if k < 0 or k > score_mat.shape[1]:
-    with torch.no_grad():
-      return score_mat * 0 + 1.0
-  if k == 0:
-    with torch.no_grad():
-      return score_mat * 0
-  return ColumnTopkFunc.apply(score_mat, k, noise)
+    if k < 0 or k > score_mat.shape[1]:
+        with torch.no_grad():
+            return score_mat * 0 + 1.0
+    if k == 0:
+        with torch.no_grad():
+            return score_mat * 0
+    return ColumnTopkFunc.apply(score_mat, k, noise)
 
 
-if __name__ == '__main__':
-  score = torch.randn(2, 4)
-  print(score)
-  arg_topk = soft_topk(score, 2, noise=100)
-  print(arg_topk)
+if __name__ == "__main__":
+    score = torch.randn(2, 4)
+    print(score)
+    arg_topk = soft_topk(score, 2, noise=100)
+    print(arg_topk)

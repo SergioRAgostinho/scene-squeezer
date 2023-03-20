@@ -7,10 +7,9 @@ from core_io.print_msg import *
 
 
 class SFTPClient:
-    """ SFTP Client for remote file management.
-    """
-    
-    def __init__(self, host_addr, user_name, pub_key_path='id_rsa', port=22, passwd=None, auto_connect=True):
+    """SFTP Client for remote file management."""
+
+    def __init__(self, host_addr, user_name, pub_key_path="id_rsa", port=22, passwd=None, auto_connect=True):
         self.host_addr = host_addr
         self.port = port
         self.user_name = user_name
@@ -22,10 +21,12 @@ class SFTPClient:
 
         if auto_connect:
             self.connect()
-    
+
     def connect(self):
         if self.pub_key_path is not None:
-            pub_key_path = Path.home() / '.ssh' / self.pub_key_path if self.pub_key_path == 'id_rsa'else Path(self.pub_key_path)
+            pub_key_path = (
+                Path.home() / ".ssh" / self.pub_key_path if self.pub_key_path == "id_rsa" else Path(self.pub_key_path)
+            )
 
             if not pub_key_path.exists():
                 raise Exception("key file %s not exists" % pub_key_path)
@@ -43,20 +44,22 @@ class SFTPClient:
             self.ssh.close()
         if self.sftp:
             self.sftp.close()
-    
-    def __del__(self, ):
+
+    def __del__(
+        self,
+    ):
         self.disconnect()
 
     def list_remote_dir(self, remote_dir, show_hiddens=False):
-        """ List remote dir
-        """
+        """List remote dir"""
         items = self.sftp.listdir(remote_dir)
-        items = [item for item in items] if show_hiddens is True else [item for item in items if not item.startswith('.')]
+        items = (
+            [item for item in items] if show_hiddens is True else [item for item in items if not item.startswith(".")]
+        )
         return items
 
     def remote_exists(self, remote_file_path: str) -> bool:
-        """ Check if remote file or directory is exists.
-        """
+        """Check if remote file or directory is exists."""
         try:
             self.sftp.stat(remote_file_path)
             return True
@@ -64,8 +67,7 @@ class SFTPClient:
             return False
 
     def is_dir(self, remote_path):
-        """ Check if the remote path is a directory.
-        """
+        """Check if the remote path is a directory."""
         try:
             return S_ISDIR(self.sftp.stat(remote_path).st_mode)
         except IOError:
@@ -123,7 +125,7 @@ class SFTPClient:
         """
         from_local = Path(from_local)
         if not from_local.exists():
-            raise Exception('Local path or dir %s not exists' % from_local)
+            raise Exception("Local path or dir %s not exists" % from_local)
 
         if from_local.is_dir():
             local_dir_list, local_file_list = self.recursive_list_local_files(from_local)
@@ -134,9 +136,12 @@ class SFTPClient:
                 if not self.remote_exists(remote_dir):
                     SFTPClient.__mkdir_p__(self.sftp, remote_dir)
 
-            for item in tqdm(local_file_list, desc=msg('uploading', self, True), disable=not show_progress):
-                self.sftp.put(os.path.join(from_local, item), os.path.join(str(to_remote), item), )
-            
+            for item in tqdm(local_file_list, desc=msg("uploading", self, True), disable=not show_progress):
+                self.sftp.put(
+                    os.path.join(from_local, item),
+                    os.path.join(str(to_remote), item),
+                )
+
         else:
             self.__put_file__(str(from_local), str(to_remote))
 
@@ -183,8 +188,8 @@ class SFTPClient:
 
         """
         if not self.remote_exists(from_remote):
-            raise Exception('Remote path %s not exists' % from_remote)
-            
+            raise Exception("Remote path %s not exists" % from_remote)
+
         to_local = Path(to_local)
 
         if self.is_dir(from_remote):
@@ -193,20 +198,20 @@ class SFTPClient:
                 if not to_local.exists():
                     to_local.mkdir(parents=True, exist_ok=False)
                 else:
-                    raise Exception('Local dir %s should be a directory' % to_local)
+                    raise Exception("Local dir %s should be a directory" % to_local)
 
             # gathering remote files
             remote_dir_list, remote_file_list = self.recursive_list_remote_files(from_remote, exclude_folder=True)
 
             # create local directories
             for dir_ in remote_dir_list:
-                local_dir = (to_local / dir_)
+                local_dir = to_local / dir_
                 if not local_dir.exists():
                     local_dir.mkdir(parents=True, exist_ok=False)
 
-            for item in tqdm(remote_file_list, desc=msg('downloading', self, True), disable=not show_progress):
+            for item in tqdm(remote_file_list, desc=msg("downloading", self, True), disable=not show_progress):
                 self.sftp.get(os.path.join(str(from_remote), item), os.path.join(to_local, item))
-            
+
             return True
         elif self.remote_exists(from_remote):
             self.__get_file__(from_remote, to_local)
@@ -288,8 +293,8 @@ class SFTPClient:
 
         """
         if not self.remote_exists(from_remote):
-            raise Exception('Remote path %s not exists' % from_remote)
-            
+            raise Exception("Remote path %s not exists" % from_remote)
+
         to_local = Path(to_local)
 
         if self.is_dir(from_remote):
@@ -298,26 +303,26 @@ class SFTPClient:
                 if not to_local.exists():
                     to_local.mkdir(parents=True, exist_ok=False)
                 else:
-                    raise Exception('Local dir %s should be a directory' % to_local)
+                    raise Exception("Local dir %s should be a directory" % to_local)
 
             # gathering remote files
             remote_dir_list, remote_file_list = self.recursive_list_remote_files(from_remote, exclude_folder=True)
 
             # create local directories
             for dir_ in remote_dir_list:
-                local_dir = (to_local / dir_)
+                local_dir = to_local / dir_
                 if not local_dir.exists():
                     local_dir.mkdir(parents=True, exist_ok=False)
 
-            for item in tqdm(remote_file_list, desc=msg('downloading', self, True), disable=not show_progress):
+            for item in tqdm(remote_file_list, desc=msg("downloading", self, True), disable=not show_progress):
                 self.sftp.get(os.path.join(str(from_remote), item), os.path.join(to_local, item))
-            
+
             return True
         elif self.remote_exists(from_remote):
             self.__get_file__(from_remote, to_local)
             return True
         else:
-            notice_msg('Remote path %s not exists' % from_remote)
+            notice_msg("Remote path %s not exists" % from_remote)
             return False
 
     def __put_file__(self, from_local_, to_remote):
@@ -354,29 +359,26 @@ class SFTPClient:
 
     @staticmethod
     def __mkdir_p__(sftp, remote_directory):
-        """ Change to this directory, recursively making new folders if needed.
-            Returns True if any folders were created.
+        """Change to this directory, recursively making new folders if needed.
+        Returns True if any folders were created.
         """
-        if remote_directory == '/':
+        if remote_directory == "/":
             # absolute path so change directory to root
-            sftp.chdir('/')
+            sftp.chdir("/")
             return
-        if remote_directory == '':
+        if remote_directory == "":
             # top-level relative directory must exist
             return
         try:
             # sub-directory exists
             sftp.chdir(remote_directory)
         except IOError:
-            dirname, basename = os.path.split(remote_directory.rstrip('/'))
-            SFTPClient.__mkdir_p__(sftp, dirname)              # make parent directories
-            sftp.mkdir(basename)                           # sub-directory missing, so created it
+            dirname, basename = os.path.split(remote_directory.rstrip("/"))
+            SFTPClient.__mkdir_p__(sftp, dirname)  # make parent directories
+            sftp.mkdir(basename)  # sub-directory missing, so created it
             sftp.chdir(basename)
             return True
 
     def make_remote_dirs(self, remote_dir):
-        """ Recursively create directory on remote machine.
-        """
+        """Recursively create directory on remote machine."""
         self.__mkdir_p__(self.sftp, remote_dir)
-
-

@@ -4,8 +4,7 @@ from matcher import superglue_matcher
 
 
 class PointFeatEncoder(nn.Module):
-
-    def __init__(self, device='cpu'):
+    def __init__(self, device="cpu"):
         super(PointFeatEncoder, self).__init__()
 
         model = superglue_matcher.get_feature_matcher(device=device)

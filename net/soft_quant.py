@@ -4,13 +4,12 @@ import torch.nn.functional as F
 
 
 def MLP(channels: list, do_bn=True):
-    """ Multi-layer perceptron """
+    """Multi-layer perceptron"""
     n = len(channels)
     layers = []
     for i in range(1, n):
-        layers.append(
-            nn.Conv1d(channels[i - 1], channels[i], kernel_size=1, bias=True))
-        if i < (n-1):
+        layers.append(nn.Conv1d(channels[i - 1], channels[i], kernel_size=1, bias=True))
+        if i < (n - 1):
             layers.append(nn.ReLU())
     return nn.Sequential(*layers)
 
@@ -19,7 +18,7 @@ class RoundWithGradient(torch.autograd.Function):
     @staticmethod
     def forward(ctx, x):
         delta = torch.max(x) - torch.min(x)
-        x = (x / delta + 0.5)
+        x = x / delta + 0.5
         return x.round() * 2 - 1
 
     @staticmethod
@@ -43,11 +42,11 @@ class DSQFunc(nn.Module):
         """
         super(DSQFunc, self).__init__()
 
-        bit_range = 2 ** num_bit - 1
+        bit_range = 2**num_bit - 1
         self.uW = torch.tensor(2 ** (num_bit - 1) - 1).float()
         self.lW = torch.tensor(-1 * (2 ** (num_bit - 1))).float()
-        self.register_buffer('running_uw', torch.tensor([self.uW.data]))
-        self.register_buffer('running_lw', torch.tensor([self.lW.data]))
+        self.register_buffer("running_uw", torch.tensor([self.uW.data]))
+        self.register_buffer("running_lw", torch.tensor([self.lW.data]))
 
         self.input_max = input_max
         self.input_min = input_min
@@ -83,12 +82,12 @@ class DSQFunc(nn.Module):
         # save mem
         x = ((x + 1) / 2 + interval) * delta + lower_bound
         # y = (interval - 128).clone().detach().type(torch.int8)
-        y = (x - lower_bound) / delta 
+        y = (x - lower_bound) / delta
         return x, torch.round(y).type(torch.uint8)
 
     def recover(self, q_uint8):
         return q_uint8 * self.delta + self.input_min
-    
+
     def to_uint8(self, q_v):
         y = (q_v - self.input_min) / self.delta
         return torch.round(y).type(torch.uint8)
@@ -106,7 +105,6 @@ class DSQFunc(nn.Module):
 
 
 class SoftQuant(nn.Module):
-
     def __init__(self, encoder_dims, decoder_dims) -> None:
         super(SoftQuant, self).__init__()
         self.encoder = MLP(encoder_dims, do_bn=True)

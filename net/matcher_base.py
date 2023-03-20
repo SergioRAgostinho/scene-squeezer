@@ -2,7 +2,6 @@ import torch.nn as nn
 
 
 class BaseMatcher(nn.Module):
-
     def extract_local_feats(self, input):
         pass
 

@@ -46,7 +46,7 @@ def quantize(x: Tensor, bins: Tensor, low: Tensor, upp: Tensor) -> Tensor:
     span = torch.where(upp > low, upp - low, bins)  # > 0.
 
     x = (x - low) * (bins / span)  # in [0., bins]
-    x = torch.where(x < bins, x, bins - 1.)  # in [0., bins)
+    x = torch.where(x < bins, x, bins - 1.0)  # in [0., bins)
     x = x.long()  # in [0, bins)
 
     return x
@@ -66,9 +66,9 @@ def pack_edges(edges: List[Tensor]) -> Tensor:
 
     maxlen = max(e.numel() for e in edges)
 
-    pack = edges[0].new_full((len(edges), maxlen), float('inf'))
+    pack = edges[0].new_full((len(edges), maxlen), float("inf"))
     for i, e in enumerate(edges):
-        pack[i, :e.numel()] = e.view(-1)
+        pack[i, : e.numel()] = e.view(-1)
 
     return pack
 
@@ -89,8 +89,8 @@ def len_packed_edges(edges: Tensor) -> Tensor:
 def histogramdd(
     x: Tensor,
     bins: Vector = 10,
-    low: Vector = 0.,
-    upp: Vector = 0.,
+    low: Vector = 0.0,
+    upp: Vector = 0.0,
     bounded: bool = False,
     weights: Tensor = None,
     sparse: bool = False,
@@ -187,8 +187,8 @@ def histogramdd(
 def histogramdd_edges(
     x: Tensor,
     bins: Vector = 10,
-    low: Vector = 0.,
-    upp: Vector = 0.,
+    low: Vector = 0.0,
+    upp: Vector = 0.0,
 ) -> List[Tensor]:
     r"""Computes the edges of the uniform bins used by `histogramdd`.
 
@@ -216,17 +216,14 @@ def histogramdd_edges(
     else:
         low, upp = low.expand(D), upp.expand(D)
 
-    return [
-        torch.linspace(l, u, b + 1)
-        for (l, u, b) in zip(low, upp, bins)
-    ]
+    return [torch.linspace(l, u, b + 1) for (l, u, b) in zip(low, upp, bins)]
 
 
 def histogram(
     x: Tensor,
     bins: int = 10,
-    low: float = 0.,
-    upp: float = 0.,
+    low: float = 0.0,
+    upp: float = 0.0,
     **kwargs,
 ) -> Tensor:
     r"""Computes the histogram of a tensor.
@@ -253,8 +250,8 @@ def histogram(
 def histogram_edges(
     x: Tensor,
     bins: int = 10,
-    low: float = 0.,
-    upp: float = 0.,
+    low: float = 0.0,
+    upp: float = 0.0,
 ) -> Tensor:
     r"""Computes the edges of the uniform bins used by `histogramdd`.
 
@@ -361,17 +358,17 @@ def marginalize(hist: Tensor, dim: Union[int, Shape], keep: bool = False) -> Ten
     return hist
 
 
-if __name__ == '__main__':  # bad practice
+if __name__ == "__main__":  # bad practice
     import numpy as np
     import timeit
 
-    print('CPU')
-    print('---')
+    print("CPU")
+    print("---")
 
     x = np.random.rand(1000000)
     xdd = np.random.rand(1000000, 5)
-    edges10 = np.linspace(0., 1., 11)
-    edges100 = np.linspace(0., 1., 101)
+    edges10 = np.linspace(0.0, 1.0, 11)
+    edges100 = np.linspace(0.0, 1.0, 101)
 
     x_t = torch.from_numpy(x)
     xdd_t = torch.from_numpy(xdd)
@@ -379,24 +376,24 @@ if __name__ == '__main__':  # bad practice
     edges100_t = torch.from_numpy(edges100)
 
     for key, f in {
-        'np.histogram': lambda: np.histogram(x, bins=100),
-        'np.histogramdd': lambda: np.histogramdd(xdd, bins=10),
-        'np.histogram (non-uniform)': lambda: np.histogram(x, bins=edges100),
-        'np.histogramdd (non-uniform)': lambda: np.histogramdd(xdd, bins=[edges10] * 5),
-        'torchist.histogram': lambda: histogram(x_t, bins=100),
-        'torchist.histogramdd': lambda: histogramdd(xdd_t, bins=10),
-        'torchist.histogram (non-uniform)': lambda: histogram(x_t, edges=edges100_t),
-        'torchist.histogramdd (non-uniform)': lambda: histogramdd(xdd_t, edges=[edges10_t] * 5),
+        "np.histogram": lambda: np.histogram(x, bins=100),
+        "np.histogramdd": lambda: np.histogramdd(xdd, bins=10),
+        "np.histogram (non-uniform)": lambda: np.histogram(x, bins=edges100),
+        "np.histogramdd (non-uniform)": lambda: np.histogramdd(xdd, bins=[edges10] * 5),
+        "torchist.histogram": lambda: histogram(x_t, bins=100),
+        "torchist.histogramdd": lambda: histogramdd(xdd_t, bins=10),
+        "torchist.histogram (non-uniform)": lambda: histogram(x_t, edges=edges100_t),
+        "torchist.histogramdd (non-uniform)": lambda: histogramdd(xdd_t, edges=[edges10_t] * 5),
     }.items():
         time = timeit.timeit(f, number=100)
-        print(key, ':', '{:.04f}'.format(time), 's')
+        print(key, ":", "{:.04f}".format(time), "s")
 
     if not torch.cuda.is_available():
         exit()
 
     print()
-    print('CUDA')
-    print('----')
+    print("CUDA")
+    print("----")
 
     x_t = x_t.cuda()
     xdd_t = xdd_t.cuda()
@@ -404,10 +401,10 @@ if __name__ == '__main__':  # bad practice
     edges100_t = edges100_t.cuda()
 
     for key, f in {
-        'torchist.histogram': lambda: histogram(x_t, bins=100),
-        'torchist.histogramdd': lambda: histogramdd(xdd_t, bins=10),
-        'torchist.histogram (non-uniform)': lambda: histogram(x_t, edges=edges100_t),
-        'torchist.histogramdd (non-uniform)': lambda: histogramdd(xdd_t, edges=[edges10_t] * 5),
+        "torchist.histogram": lambda: histogram(x_t, bins=100),
+        "torchist.histogramdd": lambda: histogramdd(xdd_t, bins=10),
+        "torchist.histogram (non-uniform)": lambda: histogram(x_t, edges=edges100_t),
+        "torchist.histogramdd (non-uniform)": lambda: histogramdd(xdd_t, edges=[edges10_t] * 5),
     }.items():
         start = torch.cuda.Event(enable_timing=True)
         end = torch.cuda.Event(enable_timing=True)
@@ -420,4 +417,4 @@ if __name__ == '__main__':  # bad practice
         torch.cuda.synchronize()
         time = start.elapsed_time(end) / 1000  # ms -> s
 
-        print(key, ':', '{:.04f}'.format(time), 's')
+        print(key, ":", "{:.04f}".format(time), "s")

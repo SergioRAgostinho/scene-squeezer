@@ -18,7 +18,7 @@ def write_args_to_json(args: dict, json_file_path: str):
         json_file_path (str): output json file path
 
     """
-    with open(json_file_path, 'w') as f:
+    with open(json_file_path, "w") as f:
         json.dump(args, f, indent=2)
 
 
@@ -33,11 +33,11 @@ def load_args_from_json(json_file_path, verbose=True):
         dictionary of args
 
     """
-    with open(json_file_path, 'r') as f:
+    with open(json_file_path, "r") as f:
         args = json.load(f)
     if verbose:
         for k, v in args.items():
-            print('%s: %s' % (k, str(v)))
+            print("%s: %s" % (k, str(v)))
     return args
 
 
@@ -58,7 +58,7 @@ def from_meta(meta: dict, key: str, default=None) -> object:
     return meta[key] if key in meta else default
 
 
-@deprecated(version='1.0', reason="This function will soon be replaced by `path_from_meta_`")
+@deprecated(version="1.0", reason="This function will soon be replaced by `path_from_meta_`")
 def path_from_meta(meta: dict, key: str, default_path=None, check_exist=True, raise_exception=True):
     """
         Load the path from the meta dictionary with the provided key, if the file is not exist,
@@ -78,13 +78,14 @@ def path_from_meta(meta: dict, key: str, default_path=None, check_exist=True, ra
     path_ = meta[key] if key in meta else default_path
     if check_exist is True:
         if path_ is None or not os.path.exists(path_):
-            warn_msg('Path for %s not exist: %s' % (key, str(path_)))
+            warn_msg("Path for %s not exist: %s" % (key, str(path_)))
             if raise_exception:
-                raise Exception('Path for %s not exist: %s' % (key, str(path_)))
+                raise Exception("Path for %s not exist: %s" % (key, str(path_)))
             path_ = None
     return path_
 
-@versionadded(version='1.0', reason="This function will soon be used")
+
+@versionadded(version="1.0", reason="This function will soon be used")
 def path_from_meta_(meta: dict, key: str, default_path=None, check_exist=True, raise_exception=False, verbose=False):
     """
         Load the path from the meta dictionary with the provided key, if the file is not exist,
@@ -104,26 +105,25 @@ def path_from_meta_(meta: dict, key: str, default_path=None, check_exist=True, r
     """
     path_ = meta[key] if key in meta else default_path
     if path_ is None:
-        path_ = 'null'
+        path_ = "null"
     path_ = Path(path_)
 
     if check_exist is True and not path_.exists():
         if verbose:
-            warn_msg('Path for %s not exist: %s' % (key, str(path_)))
+            warn_msg("Path for %s not exist: %s" % (key, str(path_)))
         if raise_exception:
-            raise Exception('Path for %s not exist: %s' % (key, str(path_)))
-        return Path('null')
+            raise Exception("Path for %s not exist: %s" % (key, str(path_)))
+        return Path("null")
     return path_
 
 
 def inv_dict(dict_: dict) -> dict:
-    """ Inverse the dictionary items:
-    """
+    """Inverse the dictionary items:"""
     return {v: k for k, v in dict_.items()}
 
+
 def merge_dict(dict_list: list) -> dict:
-    """ Merge two dictionary items
-    """
+    """Merge two dictionary items"""
     if len(dict_list) == 0:
         return dict()
 
@@ -131,9 +131,10 @@ def merge_dict(dict_list: list) -> dict:
     for dict_b in dict_list[1:]:
         for k, v in dict_b.items():
             if k in merged:
-                notice_msg('Key: %s is existing in `dict_a`, and will be replaced' % (str(k)))
+                notice_msg("Key: %s is existing in `dict_a`, and will be replaced" % (str(k)))
             merged[k] = copy.deepcopy(v)
     return merged
+
 
 def copy_attr(from_: object, to_: object):
     """
@@ -146,5 +147,5 @@ def copy_attr(from_: object, to_: object):
     """
     for attr in dir(from_):
         instance = getattr(from_, attr)
-        if not hasattr(instance, '__call__') and not attr.startswith('__'):
+        if not hasattr(instance, "__call__") and not attr.startswith("__"):
             setattr(to_, attr, getattr(from_, attr))

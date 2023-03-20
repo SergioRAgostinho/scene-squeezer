@@ -4,8 +4,8 @@ from core_io.print_msg import *
 
 
 class Singleton(type):
-    """ Base singleton class
-    """
+    """Base singleton class"""
+
     _instances = {}
 
     def __call__(cls, *args, **kwargs):
@@ -15,7 +15,7 @@ class Singleton(type):
 
 
 class ExprCtx(metaclass=Singleton):
-    """ Singleton instance for storing intermediate variables, mainly used in debugging.
+    """Singleton instance for storing intermediate variables, mainly used in debugging.
 
     Examples:
         >>> ExprCtx().set_ckpt_dir('')
@@ -42,23 +42,23 @@ class ExprCtx(metaclass=Singleton):
     disable = False
 
     def set_tmp_dir(self, dir_path):
-        msg('Set temporary output dir: %s' % dir_path, self)
+        msg("Set temporary output dir: %s" % dir_path, self)
         if not os.path.exists(dir_path):
             os.makedirs(dir_path)
         self.tmp_dir = dir_path
 
     def set_ckpt_dir(self, ckpt_dir):
-        msg('Set checkpoint dir: %s' % ckpt_dir, self)        
+        msg("Set checkpoint dir: %s" % ckpt_dir, self)
         if not os.path.exists(ckpt_dir):
             os.makedirs(ckpt_dir)
         self.ckpt_dir = ckpt_dir
 
     def set_log_dir(self, log_dir):
-        msg('Set log dir: %s' % log_dir, self)                
+        msg("Set log dir: %s" % log_dir, self)
         if not os.path.exists(log_dir):
             os.makedirs(log_dir)
         self.log_dir = log_dir
 
     def set_workspace_gpu_dev(self, dev):
-        msg('Set workspace gpu: %s' % str(dev), self)                        
+        msg("Set workspace gpu: %s" % str(dev), self)
         self.gpu_workspace_dev = dev

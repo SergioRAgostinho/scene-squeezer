@@ -10,8 +10,7 @@ Device = torch.device
 
 
 def batch_sel_3d(x, dim, index):
-    """ select features given index (batch version)
-    """
+    """select features given index (batch version)"""
     assert x.ndim == 3 and index.ndim == 2
     assert x.shape[0] == index.shape[0]
     assert index.dtype == torch.long
@@ -22,8 +21,8 @@ def batch_sel_3d(x, dim, index):
     elif dim == 2:
         sel_index_ = index.unsqueeze(1).expand(B, x.size(1), K)
     else:
-        raise Exception('only dim==1 and dim==2 is allowed')
-       
+        raise Exception("only dim==1 and dim==2 is allowed")
+
     return torch.gather(x, dim=dim, index=sel_index_)
 
 
@@ -36,11 +35,11 @@ def index_of_elements(a, elements):
     sorted_a_inds = np.argsort(a_)
     idx = np.searchsorted(sorted_a, elements_)
 
-    invalid_mask = (idx >= sorted_a.shape[0])
-    idx[invalid_mask] = 0 
+    invalid_mask = idx >= sorted_a.shape[0]
+    idx[invalid_mask] = 0
 
     out = sorted_a_inds[idx]
- 
+
     mask = np.logical_or(invalid_mask, np.logical_not(np.isin(elements_, a_)))
     out[mask] = -1
 
@@ -50,17 +49,16 @@ def index_of_elements(a, elements):
     return out
 
 
-
 def multi_index_select(A: Tensor, idx: Tensor) -> Tensor:
     r"""Select the element given the index, this function supports multi-dimension, unlike the
-        original `torch.index_select`, which only support indexing 1-D vector.
+    original `torch.index_select`, which only support indexing 1-D vector.
 
-        Args:
-            A: input tensor with arbitary dimension.
-            idx: the element index, should be (N, n_dim_of_A)
+    Args:
+        A: input tensor with arbitary dimension.
+        idx: the element index, should be (N, n_dim_of_A)
 
-        Returns:
-            selected element, (N, ).
+    Returns:
+        selected element, (N, ).
 
     """
     assert idx.ndim == 2

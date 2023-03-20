@@ -3,8 +3,7 @@ import numpy as np
 
 
 class LMDBModel(object):
-    """ Read the LMDB database
-    """
+    """Read the LMDB database"""
 
     # Path to the LMDB
     lmdb_path = None
@@ -18,8 +17,9 @@ class LMDBModel(object):
     # LMDB Cursor for navigating data
     __lmdb_cursor__ = None
 
-    ''' Constructor ----------------------------------------------------------------------------------------------------
-    '''
+    """ Constructor ----------------------------------------------------------------------------------------------------
+    """
+
     def __init__(self, lmdb_path, lock=False, read_only=True):
         self.lmdb_path = lmdb_path
         self.lock = lock
@@ -29,8 +29,9 @@ class LMDBModel(object):
     def __del__(self):
         self.close_session()
 
-    ''' Session Function -----------------------------------------------------------------------------------------------
-    '''
+    """ Session Function -----------------------------------------------------------------------------------------------
+    """
+
     def __start_session__(self):
 
         # Open LMDB file
@@ -47,8 +48,9 @@ class LMDBModel(object):
             self.__lmdb_env__.close()
             self.__lmdb_env__ = None
 
-    ''' Read -----------------------------------------------------------------------------------------------------------
-    '''
+    """ Read -----------------------------------------------------------------------------------------------------------
+    """
+
     def read_by_key(self, key):
 
         """
@@ -64,11 +66,12 @@ class LMDBModel(object):
         return np.fromstring(value, dtype=dtype)
 
     def len_entries(self):
-        length = self.__lmdb_txn__.stat()['entries']
+        length = self.__lmdb_txn__.stat()["entries"]
         return length
 
-    ''' Static Utilities
-    '''
+    """ Static Utilities
+    """
+
     @staticmethod
     def convert_to_img(data):
 

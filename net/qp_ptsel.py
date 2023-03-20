@@ -30,12 +30,14 @@ from dataset.common.base_data_source import ClipMeta, Pt2dObs, Pt3dObs
 from core_math.matrix_sqrt import sqrt_newton_schulz_autograd
 from core_math.cvxpy_qp_solver import CVXPY_QP, solve_qp_np
 
+
 def compute_rbf_kernel(in_feats, rbf_sigma=1.0):
     in_feats = in_feats.contiguous()
     pairwise_dist = torch.cdist(
-        in_feats.unsqueeze(0), in_feats.unsqueeze(0), compute_mode='donot_use_mm_for_euclid_dist'
+        in_feats.unsqueeze(0), in_feats.unsqueeze(0), compute_mode="donot_use_mm_for_euclid_dist"
     ).squeeze(0)
-    return torch.exp(-pairwise_dist / 2 * (rbf_sigma ** 2))
+    return torch.exp(-pairwise_dist / 2 * (rbf_sigma**2))
+
 
 class PointDistanceKernel(nn.Module):
     def __init__(self, args: dict, in_ch=256):
@@ -44,7 +46,7 @@ class PointDistanceKernel(nn.Module):
         self.pt_transformer = BasePointTransformer(dim=[in_ch, 256, 256, 128, 128], output_dim=64)
 
         # parameters
-        self.move_to_origin = from_meta(self.args, 'move_to_origin', True)
+        self.move_to_origin = from_meta(self.args, "move_to_origin", True)
 
     def forward(self, in_ref_xyz: torch.Tensor, in_ref_feats: torch.Tensor):
         """
@@ -66,7 +68,7 @@ class PointDistanceKernel(nn.Module):
         out_feat = self.pt_transformer(
             (r_xyz.unsqueeze(0), torch.cat([in_ref_feats, r_xyz.unsqueeze(0)], dim=-1).to(cur_dev))
         )
-        out_feat = rearrange(out_feat, '() c n -> n c')
+        out_feat = rearrange(out_feat, "() c n -> n c")
         out_feat = F.normalize(out_feat, dim=-1)
 
         # the out-product
@@ -78,27 +80,27 @@ class PointDistanceKernel(nn.Module):
 
 
 class PointSelection(nn.Module):
-    def __init__(self, args: dict, debug=False, solver_type='cvxpylayer'):
+    def __init__(self, args: dict, debug=False, solver_type="cvxpylayer"):
         super(PointSelection, self).__init__()
         self.args = args
 
         # rbf kernel
-        self.dist_kernel_rbf_sigma = from_meta(args, 'dist_kernel_rbf_sigma', default=2.0)
+        self.dist_kernel_rbf_sigma = from_meta(args, "dist_kernel_rbf_sigma", default=2.0)
 
         # qp layer
-        self.qp_num_pts = from_meta(args, 'qp_num_pts', default=500)
-        self.qp_compression_ratio = from_meta(args, 'qp_compression_ratio', default=0.5)
-        self.qp_sqrtm_iters = from_meta(args, 'qp_sqrtm_iters', default=15)
-        self.qp_solver_max_iters = from_meta(args, 'qp_solver_max_iters', default=3000)
-        self.qp_solver_eps = from_meta(args, 'qp_solver_eps', default=1e-6)
+        self.qp_num_pts = from_meta(args, "qp_num_pts", default=500)
+        self.qp_compression_ratio = from_meta(args, "qp_compression_ratio", default=0.5)
+        self.qp_sqrtm_iters = from_meta(args, "qp_sqrtm_iters", default=15)
+        self.qp_solver_max_iters = from_meta(args, "qp_solver_max_iters", default=3000)
+        self.qp_solver_eps = from_meta(args, "qp_solver_eps", default=1e-6)
         self.solver_type = solver_type
-        if self.solver_type == 'cvxpylayer':
+        if self.solver_type == "cvxpylayer":
             self.qp_layer = get_qp_layer(self.qp_num_pts, self.qp_compression_ratio)
-        elif self.solver_type == 'cvxpy':
+        elif self.solver_type == "cvxpy":
             self.qp_layer = CVXPY_QP(self.qp_num_pts, self.qp_compression_ratio)
 
         # weight: lambda
-        init_lambda_w = from_meta(args, 'qp_distinctiveness_weight', default=1.0)
+        init_lambda_w = from_meta(args, "qp_distinctiveness_weight", default=1.0)
         self.tao_o = Parameter(torch.ones(1) * init_lambda_w, requires_grad=True)
         self.register_parameter("tao_o", self.tao_o)
         print(self.tao_o)
@@ -113,9 +115,9 @@ class PointSelection(nn.Module):
             in_ref_xyz = normalize_3dpts(in_ref_xyz)
 
         pairwise_dist = torch.cdist(
-            in_ref_xyz.unsqueeze(0), in_ref_xyz.unsqueeze(0), compute_mode='donot_use_mm_for_euclid_dist'
+            in_ref_xyz.unsqueeze(0), in_ref_xyz.unsqueeze(0), compute_mode="donot_use_mm_for_euclid_dist"
         ).squeeze(0)
-        return torch.exp(-pairwise_dist / 2 * (self.dist_kernel_rbf_sigma ** 2))
+        return torch.exp(-pairwise_dist / 2 * (self.dist_kernel_rbf_sigma**2))
 
     def get_kernel(self, in_ref_xyz: torch.Tensor, in_kernel_feats: torch.Tensor, spatial_only=False):
         cur_dev = torch.cuda.current_device()
@@ -124,7 +126,7 @@ class PointSelection(nn.Module):
 
         fixed_kernel = self.get_distance_kernel(in_ref_xyz.to(cur_dev)).detach()
         # if spatial_only:
-            # return fixed_kernel
+        # return fixed_kernel
 
         learnt_kernel = compute_rbf_kernel(in_kernel_feats.to(cur_dev).contiguous(), rbf_sigma=1.0)
         return 0.5 * (learnt_kernel + fixed_kernel)
@@ -145,19 +147,24 @@ class PointSelection(nn.Module):
 
         S = sel_kernel.shape[0]
         tao = torch.exp(self.tao_o)
-        
-
 
         try:
-            if self.solver_type == 'cvxpylayer':
-                sel_kernel_sqrt, _ = sqrt_newton_schulz_autograd(sel_kernel.unsqueeze(0),
-                                                                 numIters=self.qp_sqrtm_iters,
-                                                                 dtype=sel_kernel.dtype)
-                alpha_ = self.qp_layer(sel_kernel_sqrt.view(S, S), tao * sel_dst_score.view(S, 1),
-                                       solver_args={"max_iters": self.qp_solver_max_iters,
-                                                    "eps": self.qp_solver_eps})[0]
+            if self.solver_type == "cvxpylayer":
+                sel_kernel_sqrt, _ = sqrt_newton_schulz_autograd(
+                    sel_kernel.unsqueeze(0), numIters=self.qp_sqrtm_iters, dtype=sel_kernel.dtype
+                )
+                alpha_ = self.qp_layer(
+                    sel_kernel_sqrt.view(S, S),
+                    tao * sel_dst_score.view(S, 1),
+                    solver_args={"max_iters": self.qp_solver_max_iters, "eps": self.qp_solver_eps},
+                )[0]
             else:
-                alpha_ = solve_qp_np(sel_kernel.view(S, S), sel_dst_score.view(S, 1), compression_ratio=self.qp_compression_ratio, lambda_=tao.item())
+                alpha_ = solve_qp_np(
+                    sel_kernel.view(S, S),
+                    sel_dst_score.view(S, 1),
+                    compression_ratio=self.qp_compression_ratio,
+                    lambda_=tao.item(),
+                )
                 alpha_ = torch.from_numpy(alpha_).to(sel_dst_score.device).float()
                 # alpha_ = self.qp_layer(sel_kernel.view(S, S), tao * sel_dst_score.view(S, 1))
         except Exception:

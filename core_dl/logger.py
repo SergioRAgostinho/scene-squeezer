@@ -40,15 +40,19 @@ class Logger:
     loggers = {}
 
     """ The place where log files are stored """
-    log_base_dir = ''
+    log_base_dir = ""
 
-    def __init__(self, base_dir=None,
-                 log_types='csv|tensorboard',
-                 tag='', description='',
-                 hostname=None,
-                 ckpt_path=None,
-                 continue_from_step=None,
-                 create_exp_folder=True):
+    def __init__(
+        self,
+        base_dir=None,
+        log_types="csv|tensorboard",
+        tag="",
+        description="",
+        hostname=None,
+        ckpt_path=None,
+        continue_from_step=None,
+        create_exp_folder=True,
+    ):
         """
 
         Args:
@@ -62,13 +66,13 @@ class Logger:
             create_exp_folder (bool): create the experiment folder if needed.
 
         """
-        current_time = datetime.datetime.now().strftime('%b%d_%H-%M-%S')
+        current_time = datetime.datetime.now().strftime("%b%d_%H-%M-%S")
         hostname = socket.gethostname() if hostname is None else hostname
         self.hostname = hostname
         if continue_from_step is not None or create_exp_folder is False:
             self.log_base_dir = base_dir
         else:
-            self.log_base_dir = os.path.join(base_dir, current_time + '_' + hostname + '_' + tag)
+            self.log_base_dir = os.path.join(base_dir, current_time + "_" + hostname + "_" + tag)
 
         # set the continue log
         self.continue_from_step = continue_from_step if continue_from_step is not None and continue_from_step > 0 else 0
@@ -79,26 +83,27 @@ class Logger:
             os.mkdir(self.log_base_dir)
 
         # check if metadata exists
-        self.meta_file_path = os.path.join(self.log_base_dir, 'meta.json')
+        self.meta_file_path = os.path.join(self.log_base_dir, "meta.json")
         if os.path.exists(self.meta_file_path):
             with open(self.meta_file_path) as json_data:
                 self.meta_dict = json.load(json_data)
                 json_data.close()
-                self.meta_dict['description'] += '#[' + current_time + '_' + hostname + ']:\n' + description + '\n'
-                self.meta_dict['comment'] += '#[' + current_time + '_' + hostname + ']:\n' + tag + '\n'
+                self.meta_dict["description"] += "#[" + current_time + "_" + hostname + "]:\n" + description + "\n"
+                self.meta_dict["comment"] += "#[" + current_time + "_" + hostname + "]:\n" + tag + "\n"
                 if ckpt_path is not None:
-                    self.meta_dict['history'] += \
-                        '#[' + current_time + '_' + hostname + ']:\n' + 'Continue From %s' % ckpt_path + '\n'
+                    self.meta_dict["history"] += (
+                        "#[" + current_time + "_" + hostname + "]:\n" + "Continue From %s" % ckpt_path + "\n"
+                    )
         else:
             # new meta data
             self.meta_dict = dict()
-            self.meta_dict['history'] = '#[' + current_time + '_' + hostname + ']:\n' + 'start initial training' + '\n'
-            self.meta_dict['description'] = '#[' + current_time + '_' + hostname + ']:\n' + description + '\n'
-            self.meta_dict['comment'] = '#[' + current_time + '_' + hostname + ']:\n' + tag + '\n'
-            self.meta_dict['lastest_step'] = 0
+            self.meta_dict["history"] = "#[" + current_time + "_" + hostname + "]:\n" + "start initial training" + "\n"
+            self.meta_dict["description"] = "#[" + current_time + "_" + hostname + "]:\n" + description + "\n"
+            self.meta_dict["comment"] = "#[" + current_time + "_" + hostname + "]:\n" + tag + "\n"
+            self.meta_dict["lastest_step"] = 0
 
         self.log_types = log_types
-        log_types_token = log_types.split('|')
+        log_types_token = log_types.split("|")
         for log_type in log_types_token:
             log_type = log_type.strip()
             logger = self.logger_factory(log_type)
@@ -114,11 +119,11 @@ class Logger:
             logger.add_keys(keys)
 
     def log(self, log_dict):
-        log_dict['Iteration'] += self.continue_from_step
+        log_dict["Iteration"] += self.continue_from_step
         for log_type, logger in self.loggers.items():
             logger.log(log_dict)
 
-    def get_logger_by_type(self, type_='tensorboard'):
+    def get_logger_by_type(self, type_="tensorboard"):
         if type_ in self.loggers:
             return self.loggers[type_]
         else:
@@ -127,16 +132,16 @@ class Logger:
     def get_tensorboard_writer(self) -> SummaryWriter or None:
         # a = TensorboardLogger(self.log_base_dir, purge_step=self.continue_from_step)
         # a.writer.add_text(text_string='', global_step=0)
-        if 'tensorboard' in self.loggers:
-            return self.loggers['tensorboard'].writer
+        if "tensorboard" in self.loggers:
+            return self.loggers["tensorboard"].writer
         else:
             return None
 
     def logger_factory(self, logger_name):
         if logger_name == "csv":
-            return FileLogger(os.path.join(self.log_base_dir, 'log.csv'))
+            return FileLogger(os.path.join(self.log_base_dir, "log.csv"))
         elif logger_name == "txt":
-            return FileLogger(os.path.join(self.log_base_dir, 'log.txt'))
+            return FileLogger(os.path.join(self.log_base_dir, "log.txt"))
         elif logger_name == "tensorboard" and self.continue_from_step > 0:
             return TensorboardLogger(self.log_base_dir, purge_step=self.continue_from_step)
         elif logger_name == "tensorboard":
@@ -145,9 +150,9 @@ class Logger:
             return None
 
     def draw_architecture(self, model, input_shape, verbose=False):
-        if 'tensorboard' in self.loggers.keys():
+        if "tensorboard" in self.loggers.keys():
 
-            writer = self.loggers['tensorboard'].writer
+            writer = self.loggers["tensorboard"].writer
             dtype = torch.FloatTensor
 
             # check if there are multiple inputs to the network
@@ -157,10 +162,10 @@ class Logger:
                 x = Variable(torch.rand(1, *input_shape)).type(dtype)
 
             # draw the graph
-            writer.add_graph(model, (x, ), verbose=verbose)
+            writer.add_graph(model, (x,), verbose=verbose)
 
         else:
-            warnings.warn('No instance of tensorboard logger configured')
+            warnings.warn("No instance of tensorboard logger configured")
 
     def flush(self):
         for log_type, logger in self.loggers.items():
@@ -172,7 +177,7 @@ class Logger:
     def print_meta_info(self):
         if self.meta_dict is not None:
             for meta_key in self.meta_dict.keys():
-                print('--- ' + meta_key + ' -----\n' + str(self.meta_dict[meta_key]))
+                print("--- " + meta_key + " -----\n" + str(self.meta_dict[meta_key]))
 
     def save_meta_info(self, add_log_dict=None):
         # get the current iteration
@@ -182,14 +187,15 @@ class Logger:
             if cur_iteration > 0:
                 break
 
-        self.meta_dict['lastest_step'] = cur_iteration
+        self.meta_dict["lastest_step"] = cur_iteration
         if add_log_dict is not None:
-            current_time = datetime.datetime.now().strftime('%b%d_%H-%M-%S')
+            current_time = datetime.datetime.now().strftime("%b%d_%H-%M-%S")
             for add_key in add_log_dict.keys():
                 if add_key in self.meta_dict:
-                    if add_key == 'history':
-                        self.meta_dict[add_key] += '#[' + current_time + '_' + self.hostname \
-                                                   + ']:\n' + str(add_log_dict[add_key]) + '\n'
+                    if add_key == "history":
+                        self.meta_dict[add_key] += (
+                            "#[" + current_time + "_" + self.hostname + "]:\n" + str(add_log_dict[add_key]) + "\n"
+                        )
                     else:
                         self.meta_dict[add_key] += add_log_dict[add_key]
                 else:
@@ -199,13 +205,13 @@ class Logger:
             json.dump(self.meta_dict, json_file, indent=2)
 
     def __sig_handler__(self, signo, frame):
-        warn_msg('[Terminated] SOMETHING IS WRONG! (SINNO: %s, FRAME: %s)' % (str(signo), str(frame)), self)
+        warn_msg("[Terminated] SOMETHING IS WRONG! (SINNO: %s, FRAME: %s)" % (str(signo), str(frame)), self)
         sys.exit(0)
 
     def report_logger(self):
-        msg('Loggers at %s:' % self.hostname, self)
+        msg("Loggers at %s:" % self.hostname, self)
         for key in self.loggers.keys():
             self.loggers[key].report()
 
         if self.continue_from_step > 0:
-            notice_msg('Continue from step %d' % self.continue_from_step, self)
+            notice_msg("Continue from step %d" % self.continue_from_step, self)

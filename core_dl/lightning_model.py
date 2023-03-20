@@ -25,14 +25,14 @@ def is_overridden_func(func):
 
 
 class BaseLightningModule(pl.LightningModule):
-    """ The extended LightningModule version with useful tools.
-    """
+    """The extended LightningModule version with useful tools."""
 
     """ verbose mode """
     verbose_mode = False
 
     """ Initialization -------------------------------------------------------------------------------------------------
     """
+
     def __init__(self, train_params: TrainParameters, auto_optimize=True, auto_assign_devices=True):
         super().__init__()
         self.args = train_params
@@ -44,7 +44,7 @@ class BaseLightningModule(pl.LightningModule):
         self.auto_assign_devices = auto_assign_devices
 
         if self.verbose_mode:
-            title_msg('Network: %s' % self.args.NAME_TAG)
+            title_msg("Network: %s" % self.args.NAME_TAG)
 
         # set experiment singleton ctx
         if self.args.DEBUG_OUTPUT_DIR is not None:
@@ -54,8 +54,11 @@ class BaseLightningModule(pl.LightningModule):
         self.dev2models = self._instance_devices()
         self.model2dev = None
         if self.auto_assign_devices is False and self.dev2models is None:
-            e = err_msg("Set the device of each model by overloading the function `_instance_devices()`",
-                        obj=self, return_only=True)
+            e = err_msg(
+                "Set the device of each model by overloading the function `_instance_devices()`",
+                obj=self,
+                return_only=True,
+            )
             raise Exception(e)
         elif self.dev2models is not None:
             self.model2dev = dict()
@@ -68,14 +71,13 @@ class BaseLightningModule(pl.LightningModule):
             self.report()
 
     def __move_to_devices__(self):
-        """ Move model to device
-        """
+        """Move model to device"""
         if self.auto_assign_devices is False:
             for device, models in self.dev2models.items():
                 for m in models:
                     m.to(device)
                     if self.args.VERBOSE_MODE:
-                        notice_msg('Move %s to device: %s' % (type(m), str(device)))
+                        notice_msg("Move %s to device: %s" % (type(m), str(device)))
 
     def load_from(self, ckpt_paths: dict):
         pass
@@ -90,14 +92,14 @@ class BaseLightningModule(pl.LightningModule):
         if self.logger is not None and self.logger.experiment is not None:
 
             # log parameters
-            LightningLogger.add_text(self.logger.experiment, str(self.args), tag='params', step=0)
+            LightningLogger.add_text(self.logger.experiment, str(self.args), tag="params", step=0)
 
             # log the source codes
             scripts_paths = []
             for i in self._instance_scripts():
                 if isinstance(i, str):
                     scripts_paths.append(str(Path(i).absolute()))
-                elif hasattr(i, '__class__'):
+                elif hasattr(i, "__class__"):
                     scripts_paths.append(inspect.getfile(i.__class__))
 
             LightningLogger.add_sources_code(self.logger.experiment, scripts_paths)
@@ -124,17 +126,15 @@ class BaseLightningModule(pl.LightningModule):
 
     def eval(self):
         _ = super(BaseLightningModule, self).eval()
-        notice_msg('Setting Lightning Model to eval model.', obj=self)
+        notice_msg("Setting Lightning Model to eval model.", obj=self)
         self.__move_to_devices__()
 
-    def _instance_scripts(self) -> List: 
-        """ set the instance to be saved (its scripts)
-        """
+    def _instance_scripts(self) -> List:
+        """set the instance to be saved (its scripts)"""
         return []
 
     def _instance_devices(self) -> dict or None:
-        """ set instance devices when self.auto_assign_devices = False
-        """
+        """set instance devices when self.auto_assign_devices = False"""
         return None
 
     def on_visualize(self, ignore_first=False):
@@ -145,20 +145,21 @@ class BaseLightningModule(pl.LightningModule):
 
     """ Set network ----------------------------------------------------------------------------------------------------
     """
+
     def _set_network(self, args: dict or None):
         """
-            [Override function]
-            Set the network instance.
+        [Override function]
+        Set the network instance.
         """
         self.loaded_network = False
 
     """ Verbose --------------------------------------------------------------------------------------------------------
     """
+
     def report(self):
-        """ Report the training details. parameters, optimizer, network etc.
-        """
-        print('Network information, N/A')
+        """Report the training details. parameters, optimizer, network etc."""
+        print("Network information, N/A")
         if not self.auto_assign_devices:
-            notice_msg('Disabled: automatic assigning device')
+            notice_msg("Disabled: automatic assigning device")
         if not self.automatic_optimization:
             notice_msg("Disabled: pl's automatic optimizer")
