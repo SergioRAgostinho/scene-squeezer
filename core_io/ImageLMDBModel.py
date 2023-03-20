@@ -26,7 +26,7 @@ class ImageLMDBModel(LMDBModel):
     def __del__(self):
         super(ImageLMDBModel, self).__del__()
 
-    def getImageAndDimByKey(self, key: str, channel=3) -> [np.ndarray, np.ndarray]:
+    def getImageAndDimByKey(self, key: str, channel=3) -> tuple[np.ndarray, np.ndarray]:
         """
             Get the image by providing key from database
 
