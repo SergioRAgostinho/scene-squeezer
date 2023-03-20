@@ -18,7 +18,6 @@ Created on Thu Feb  6 13:02:31 2020
 @author: yujia
 """
 
-import numpy as np
 import torch
 from torch.autograd import Function
 import torch.nn.functional as F
@@ -113,7 +112,6 @@ def sinkhorn_backward(grad_output_Gamma, Gamma, mu, nu, epsilon):
 class TopKFunc1(Function):
     @staticmethod
     def forward(ctx, C, mu, nu, epsilon, max_iter):
-
         with torch.no_grad():
             if epsilon > 1e-2:
                 Gamma = sinkhorn_forward(C, mu, nu, epsilon, max_iter)
@@ -129,7 +127,6 @@ class TopKFunc1(Function):
 
     @staticmethod
     def backward(ctx, grad_output_Gamma):
-
         epsilon = ctx.epsilon
         mu, nu, Gamma = ctx.saved_tensors
         # mu [1, n, 1]

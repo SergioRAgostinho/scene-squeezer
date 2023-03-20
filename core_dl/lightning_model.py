@@ -1,17 +1,10 @@
 # -*- coding: utf-8 -*-
-import datetime
 import inspect
 from pathlib import Path
 from typing import List
 
-import torch
-from pytorch_lightning import LightningDataModule, loggers
-from torch.utils.data import dataloader
-from tqdm.autonotebook import tqdm
 
-import core_dl.module_util as dl_util
 from core_dl.expr_ctx import ExprCtx
-from core_dl.logger import Logger
 from core_dl.lightning_logger import LightningLogger
 from core_io.print_msg import *
 from core_dl.train_params import TrainParameters
@@ -90,7 +83,6 @@ class BaseLightningModule(pl.LightningModule):
         self.__move_to_devices__()
 
         if self.logger is not None and self.logger.experiment is not None:
-
             # log parameters
             LightningLogger.add_text(self.logger.experiment, str(self.args), tag="params", step=0)
 

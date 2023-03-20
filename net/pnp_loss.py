@@ -109,7 +109,7 @@ class RandomizedPnPLoss(nn.Module):
             pnp_sample_indices = random.sample(range(r_3d_sel_qp.shape[0]), 3)
             r_3d_sample = r_3d_sel_qp[pnp_sample_indices]
             q_2d_sample = q_2d_sel_qp[pnp_sample_indices]
-            r_2d_sample = r_2d_sel_qp[pnp_sample_indices]
+            r_2d_sel_qp[pnp_sample_indices]
 
             # plot_images([q_img, r_img])
             # plot_matches(q_2d_sample.cpu() * 0.5, r_2d_sample.cpu() * 0.5, a=0.6)

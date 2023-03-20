@@ -8,7 +8,6 @@ from net.scene_sq import corres_pos_from_pairs
 from exp.scene_sq_utils import get_corres_ref_2d_indices
 from einops import asnumpy
 from visualizer.corres_plot import *
-from PIL import Image
 import io
 
 
@@ -33,13 +32,13 @@ def get_corres_ref_2d(sample, res, args: dict, use_gt_matches: bool = False):
     num_r_frames = len(ref_info["img_names"])
 
     # parameters
-    out_file_path = path_from_meta(args, "out_file_path", check_exist=False, raise_exception=False)
+    path_from_meta(args, "out_file_path", check_exist=False, raise_exception=False)
     sel_q_ids = from_meta(args, "sel_q_ids", default=[q for q in res.keys() if isinstance(q, int)])
-    max_ref_frames = from_meta(args, "max_ref_frames", default=num_r_frames)
-    num_corres = from_meta(args, "num_corres")
-    lw = from_meta(args, "line_width", default=0.5)
-    pr = from_meta(args, "pt_radius", default=2)
-    alpha = from_meta(args, "line_alpha", default=0.5)
+    from_meta(args, "max_ref_frames", default=num_r_frames)
+    from_meta(args, "num_corres")
+    from_meta(args, "line_width", default=0.5)
+    from_meta(args, "pt_radius", default=2)
+    from_meta(args, "line_alpha", default=0.5)
 
     # gathering q2r corresopndences in 2d to 2d
     ref_frame_ids = np.arange(num_r_frames)
@@ -53,7 +52,7 @@ def get_corres_ref_2d(sample, res, args: dict, use_gt_matches: bool = False):
 
         for r in ref_frame_ids:
             r_3d_obs = ref_info["pt2d_obs3d"][r][0].cpu()
-            r_2d_pos = ref_info["pt2d_pos"][r][0].cpu()
+            ref_info["pt2d_pos"][r][0].cpu()
             sel_matches = get_corres_ref_2d_indices(corres_matches, r_3d_obs)
             corres_dict[q].append(sel_matches)
     return corres_dict
@@ -71,7 +70,6 @@ def query_2_ref_frames(ref_info: dict, q2r_matches: dict, args: dict):
     # gathering q2r corresopndences in 2d to 2d
     corres_dict = dict()
     for q in sel_q_ids:
-
         corres_matches = q2r_matches[q]
         if isinstance(corres_matches, np.ndarray):
             corres_matches = torch.from_numpy(corres_matches)
@@ -134,7 +132,6 @@ def plot_q2r(sample, res, args: dict, to_grid=True, show=False):
             q2r_ref_idx = q2r_ref_idx[:max_ref_frames]
 
         for ref_idx in q2r_ref_idx:
-
             r_2d_pos = ref_info["pt2d_pos"][ref_idx].cpu()
             r_pos_scale_f = r_vis_imgs[ref_idx].shape[0] / ref_info["dims"][ref_idx][0].item()
             sel_matches = corres_dict[q][ref_idx]

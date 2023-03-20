@@ -1,10 +1,8 @@
 import numpy as np
 import torch
-import torch.nn.functional as F
 import core_3dv.camera_operator_gpu as cam_opt_gpu
 from core_dl.torch_ext import index_of_elements
-from einops import asnumpy, rearrange
-from matcher.superglue_matcher import SuperGlueMatcher
+from einops import asnumpy
 from SuperGluePretrainedNetwork.models.superglue import normalize_keypoints
 from dataset.common.base_data_source import ClipMeta, Pt2dObs, Pt3dObs
 from dataset.common.gt_corres_torch import *
@@ -36,7 +34,6 @@ def split_info(info: dict, indices):
 def r2q(q2r_matches: dict):
     r2q_matches = dict()
     for q, matches in q2r_matches.items():
-
         matches = q2r_matches[q]
         if isinstance(matches, torch.Tensor):
             matches = asnumpy(matches)
@@ -76,11 +73,10 @@ def r2q_reproj_dist(q_meta: ClipMeta, q_pt2d: Pt2dObs, r_pt3d: Pt3dObs, r2q_dict
 
     r_rpj_dist = dict()
     for r, obs in r2q_dict.items():
-
         if r not in r_rpj_dist:
             r_rpj_dist[r] = list()
 
-        for (q_f_idx, q_pt_idx) in obs:
+        for q_f_idx, q_pt_idx in obs:
             q_pt_pos = q_kypt_pos[q_f_idx][q_pt_idx].view(2)
             rpj_2d_pos = rpj_2d_pts[q_f_idx][r].view(2)
             dist = torch.norm(q_pt_pos - rpj_2d_pos)
@@ -90,14 +86,12 @@ def r2q_reproj_dist(q_meta: ClipMeta, q_pt2d: Pt2dObs, r_pt3d: Pt3dObs, r2q_dict
 
 
 def r2q_scores(r2q_dict, q2r_score_dict):
-
     r2q_scores = dict()
     for r, obs in r2q_dict.items():
-
         if r not in r2q_scores:
             r2q_scores[r] = list()
 
-        for (q_f_idx, q_pt_idx) in obs:
+        for q_f_idx, q_pt_idx in obs:
             score = q2r_score_dict[q_f_idx][q_pt_idx, r]
             r2q_scores[r].append((q_f_idx, score.item()))
 

@@ -1,5 +1,4 @@
 from itertools import chain
-from torch.autograd.grad_mode import no_grad
 
 import torch.cuda
 
@@ -8,7 +7,6 @@ from core_dl.lightning_logger import LightningLogger
 from core_dl.lightning_model import BaseLightningModule
 from core_dl.train_params import TrainParameters
 from dataset.common.split_scene import sel_subset_clip, sel_subset_obs2d
-from net.dlt_pnp_loss import DLTPnPLoss
 from net.fast_pnp_loss import FastPnPLoss
 from net.qp_ptsel import PointSelection
 from net.scene_fuser_sq import *
@@ -23,7 +21,6 @@ class SceneSQPTSelBox(BaseLightningModule):
         super(SceneSQPTSelBox, self).__init__(params, auto_optimize=False, auto_assign_devices=False)
 
     def _set_network(self, args):
-
         # parameters
         self.reg_loss_w = from_meta(args, "reg_loss_w", default=0.5)
         self.train_sqz = from_meta(args, "train_sqz", default=False)
@@ -140,7 +137,7 @@ class SceneSQPTSelBox(BaseLightningModule):
             cur_dev = torch.cuda.current_device()
             B, M, _ = r_interm["in_feats"].shape
             dist_score = torch.exp(-log_var).to(cur_dev).view(B, M, 1)
-            input_feats = torch.cat([r_interm["in_feats"], dist_score], dim=-1).contiguous()
+            torch.cat([r_interm["in_feats"], dist_score], dim=-1).contiguous()
             r_kernel = self.pt_sel.get_distance_kernel(r_xyz)
 
         # step 4: run multiple sampling and optimize
@@ -149,7 +146,7 @@ class SceneSQPTSelBox(BaseLightningModule):
             r_kernel = r_kernel.to(cur_dev)
 
             q_indices = [k for k in res_dict.keys() if isinstance(k, int)]
-            pred_r2qs = r2q({q: res_dict[q]["matches"].cpu() for q in q_indices})
+            r2q({q: res_dict[q]["matches"].cpu() for q in q_indices})
 
             dist_score = dist_score.to(cur_dev).view(-1)
             # r_kernel = Variable(r_kernel, requires_grad=True).to(cur_dev)

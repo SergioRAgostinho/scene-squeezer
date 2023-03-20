@@ -163,7 +163,6 @@ if __name__ == "__main__":
     import random
 
     from dataset.data_module import CachedDataModule
-    from core_dl.expr_ctx import ExprCtx
     import core_3dv.camera_operator_gpu as cam_opt_gpu
     from core_math.transfom import euler_from_matrix
 

@@ -1,7 +1,5 @@
 from __future__ import print_function, division, absolute_import
-import torch
 import torch.nn as nn
-from torch.autograd import Variable
 from functools import reduce
 
 

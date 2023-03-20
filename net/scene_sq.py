@@ -1,17 +1,14 @@
 from typing import List, Tuple
-from numpy.lib.arraysetops import isin
 import torch
-from torch import tensor
 from core_io.meta_io import *
 from torch_scatter import scatter
-from einops import rearrange, repeat, asnumpy
+from einops import rearrange, asnumpy
 
 # from net.pt_transformer import BasePointTransformer
 import torch.nn as nn
 import numpy as np
 from matcher.superglue_matcher import BaseMatcher
 from SuperGluePretrainedNetwork.models.superglue import normalize_keypoints
-import torch.nn.functional as F
 from net.pt_transformer import BasePointTransformer
 
 
@@ -139,7 +136,6 @@ class SceneSqueezer(nn.Module):
         self.move_to_origin = from_meta(self.args, "move_to_origin", True)
 
     def preprocess(self, input_data):
-
         # normalize the keypoint 2D position
         input_data["pt2d_pos_n"] = normalize_kpts_pos(input_data["dims"], input_data["pt2d_pos"])
 
@@ -151,7 +147,6 @@ class SceneSqueezer(nn.Module):
         input_data = self.preprocess(input_data)
 
         with torch.no_grad():
-
             # encode features
             pt2d_npos_t = torch.cat([r.squeeze(0) for r in input_data["pt2d_pos_n"]])
             pt2d_feats_t = torch.cat([r.squeeze(0) for r in input_data["pt2d_feats"]])

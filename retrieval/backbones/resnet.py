@@ -1,9 +1,5 @@
 import torch.nn as nn
-import torch
 import math
-import numpy as np
-from torch.autograd import Variable
-import torch.nn.functional as F
 
 
 def conv3x3(in_planes, out_planes, stride=1):
@@ -215,7 +211,7 @@ class ResNet(nn.Module):
         assert self.model_name in model_urls, "Unknown model '%s'" % self.model_name
 
         model_dir = "dirtorch/data/models/classification/"
-        import os, stat  # give group permission
+        import os  # give group permission
 
         try:
             os.makedirs(model_dir)

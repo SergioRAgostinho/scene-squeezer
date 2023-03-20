@@ -1,7 +1,5 @@
-from comet_ml import Experiment
-from pytorch_lightning import callbacks, loggers, trainer
-from pytorch_lightning.callbacks.model_checkpoint import ModelCheckpoint
-import torch, argparse, sys
+from pytorch_lightning import trainer
+import torch, argparse
 
 torch.manual_seed(1000)
 from core_dl.train_params import TrainParameters
@@ -9,8 +7,7 @@ from exp.scene_sq_unified_ptsel_box import SceneSQPTSelBox
 from dataset.data_module import RankedDataModule, CachedDataModule
 from core_dl.get_host_name import get_host_name
 from core_io.print_msg import *
-import pytorch_lightning as pl
-from core_dl.lightning_logger import LightningLogger, PeriodicCheckpoint
+from core_dl.lightning_logger import LightningLogger
 from core_dl.lightning_trainer import create_pl_trainer
 from pathlib import Path
 
@@ -70,7 +67,6 @@ def overwrite_params(params: TrainParameters, args) -> TrainParameters:
 
 
 if __name__ == "__main__":
-
     args, _ = get_parser().parse_known_args()
     notice_msg("Run on machine: %s with experiment: %s, DEBUG=%s" % (args.hostname, args.exp, args.debug))
 
@@ -94,7 +90,6 @@ if __name__ == "__main__":
     """
     dbg_cache_dataset_path = Path(params.DEBUG_OUTPUT_DIR, "cached_data.bin")
     if not params.DEBUG or not dbg_cache_dataset_path.exists():
-
         data_model = RankedDataModule(
             json_file_path=Path("dataset", "config", "data.%s.json" % args.hostname),
             train_params=params,

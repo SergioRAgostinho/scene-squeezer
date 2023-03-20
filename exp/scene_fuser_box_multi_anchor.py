@@ -155,7 +155,7 @@ class SceneSQBox(BaseLightningModule):
         # log
         if self.global_step % self.args.VIS_STEPS == 0 and self.logger is not None:
             q_imgs, _, q_info, rp_imgs, rp_info = batch[:5]
-            num_q_imgs = q_imgs.shape[1]
+            q_imgs.shape[1]
 
             # vis_q2r = sq_vis.plot_q2r(sample=[q_imgs, q_info, rp_imgs, rp_info], res=res_dict, args={
             #     # 'sel_q_ids': [0, num_q_imgs // 2, num_q_imgs - 1],
@@ -173,7 +173,6 @@ class SceneSQBox(BaseLightningModule):
             # LightningLogger.add_hist(loggers, res_dict['d'], name='D', step=self.global_step)
 
         elif self.global_step % 20 == 0 and self.logger is not None:
-
             loggers = self.logger.experiment
             LightningLogger.add_hist(loggers, var, name="var", step=self.global_step)
             # LightningLogger.add_hist(loggers, res_dict['d'], name='D', step=self.global_step)

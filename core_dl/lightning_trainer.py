@@ -1,4 +1,3 @@
-from logging import DEBUG
 import pytorch_lightning as pl
 from core_io.print_msg import title_msg
 from core_dl.train_params import TrainParameters

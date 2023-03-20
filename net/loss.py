@@ -1,8 +1,7 @@
 import torch
 import torch.nn as nn
 import numpy as np
-from core_3dv.camera_operator_gpu import transform_points, pi
-from core_dl.torch_ext import index_of_elements, multi_index_select, ravel_multi_index
+from core_dl.torch_ext import multi_index_select
 
 
 def exp_loss(all_matches: torch.Tensor, scores: torch.Tensor, eps=1e-9):
@@ -67,9 +66,9 @@ def distinctive_loss(pred_r2q_rdist: dict, log_var: torch.Tensor, dist_thres=6.0
 def main():
     data = torch.load("dbg/sample_data.pt")
 
-    q_imgs = data["q_imgs"]
+    data["q_imgs"]
     q_info = data["q_info"]
-    rp_imgs = data["rp_imgs"]
+    data["rp_imgs"]
     rp_info = data["rp_info"]
     matches = data["matches"]
     q_idx = data["rand_q_id"]

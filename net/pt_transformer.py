@@ -3,7 +3,6 @@ from einops import rearrange
 import torch.nn as nn
 import torch.nn.functional as F
 from point_transformer_ops.point_transformer_modules import PointTransformerBlock, TransitionUp, TransitionDown
-import point_transformer_ops.point_transformer_utils as pt_utils
 from typing import Tuple
 
 
@@ -59,7 +58,6 @@ class SqueezerMixedTransformer(nn.Module):
         )
 
     def forward(self, pt_pos, pt_feats):
-
         B, N, C = pt_feats.shape
         l_xyz, l_features = [pt_pos], [pt_feats]
 
@@ -152,7 +150,6 @@ class BasePointTransformer(nn.Module):
         )
 
     def forward(self, pc: Tuple):
-
         pt_pos, pt_feats = pc  # input dim: (B, N, 3), (B, N, C)
         # pt_feats = rearrange(pt_feats, 'b n c -> b c n')
         # B, C, N = pt_feats.shape
@@ -162,7 +159,6 @@ class BasePointTransformer(nn.Module):
         # encoding
         for i in range(int(len(self.Encoder) / 2)):
             if i == 0:
-
                 # linear layer
                 li_features = self.Encoder[2 * i](l_features[i])
                 li_xyz = l_xyz[i]
@@ -195,7 +191,6 @@ class BasePointTransformer(nn.Module):
 
 
 if __name__ == "__main__":
-
     pt_pos = torch.rand((1, 401, 3)).to(1)
     pt_feats = torch.rand((1, 401, 256)).to(1)
 

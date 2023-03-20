@@ -1,4 +1,3 @@
-from pickle import TRUE
 import numpy as np
 import torch
 import torch.nn as nn
@@ -8,11 +7,8 @@ import random
 
 from core_io.meta_io import from_meta
 import core_3dv.camera_operator_gpu as cam_opt_gpu
-from dataset.common.base_data_source import ClipMeta, Pt2dObs
 from dataset.common.gt_corres_torch import corres_pos_from_pairs
 from einops import asnumpy
-from core_dl.expr_ctx import ExprCtx
-from net.loss import DiffBinarizer
 from evaluator.trajectory_eval import rel_distance, rel_R_deg
 
 
@@ -50,7 +46,6 @@ class FastPnPLoss(nn.Module):
 
         hyp_selpt_ids = []
         for x in range(num_samples):
-
             if x < num_samples * num_full_alpha_ratio:
                 sel_pt_ids = np.random.choice(r_sel_alpha_idx, 4)
             else:
@@ -136,7 +131,7 @@ class FastPnPLoss(nn.Module):
         @param r_alpha: (N,) Points distribution (alpha)
         """
         cur_dev = torch.cuda.current_device()
-        r_alpha_b = r_alpha.to(cur_dev)
+        r_alpha.to(cur_dev)
 
         # re-project the references points to query frame given gt query pose
         rl_gt_pos2d, rl_gt_depth = cam_opt_gpu.reproject(q_gt_Tcw, q_K, r_xyz)  # (M, 2), (M, )
@@ -144,7 +139,7 @@ class FastPnPLoss(nn.Module):
 
         # filtering r2q_matches
         r2q_valid_flags = rl_valid[r2q_matches[:, 0]]
-        r2q_valid_idx = torch.where(r2q_valid_flags == True)[0]
+        r2q_valid_idx = torch.where(r2q_valid_flags is True)[0]
         r2q_matches = r2q_matches[r2q_valid_idx]
 
         # re-projection err between projected ref. (using GT query pose) to the matched query keypoint position
@@ -178,7 +173,7 @@ class FastPnPLoss(nn.Module):
             h_repj_err = self.hypo_repj_errs(h_Rts, q_sel_pos2d, rl_sel_pos3d, q_K)
         else:
             # re-projection error using references points with ground-truth query pose
-            r_valid_idx = torch.where(rl_valid == True)[0]
+            r_valid_idx = torch.where(rl_valid is True)[0]
             r_valid_xyz = r_xyz[r_valid_idx, :].view(1, r_valid_idx.shape[0], 3)
             rl_valid_gt_pos2d = rl_gt_pos2d[r_valid_idx].view(1, -1, 2)
 
@@ -207,7 +202,7 @@ class FastPnPLoss(nn.Module):
         r2q_matches,
     ):
         cur_dev = torch.cuda.current_device()
-        r_alpha_b = r_alpha.to(cur_dev)
+        r_alpha.to(cur_dev)
 
         # re-project the references points to query frame given gt query pose
         rl_gt_pos2d, rl_gt_depth = cam_opt_gpu.reproject(q_gt_Tcw, q_K, r_xyz)  # (M, 2), (M, )
@@ -215,7 +210,7 @@ class FastPnPLoss(nn.Module):
 
         # filtering r2q_matches
         r2q_valid_flags = rl_valid[r2q_matches[:, 0]]
-        r2q_valid_idx = torch.where(r2q_valid_flags == True)[0]
+        r2q_valid_idx = torch.where(r2q_valid_flags is True)[0]
         r2q_matches = r2q_matches[r2q_valid_idx]
 
         # re-projection err between projected ref. (using GT query pose) to the matched query keypoint position
@@ -235,7 +230,7 @@ class FastPnPLoss(nn.Module):
         # sampling -----------------------------------------------------------------------------------------------------
         hyp_selpt_ids = self.sampling(rl_sel_alpha, num_samples=self.num_samples, min_samples_qp_match=2)
 
-        hypo_alphas = rl_sel_alpha[hyp_selpt_ids.view(-1)].view(-1, 4)
+        rl_sel_alpha[hyp_selpt_ids.view(-1)].view(-1, 4)
         hypo_q_pos2d = q_sel_pos2d[hyp_selpt_ids.view(-1)].view(-1, 4, 2)
         hypo_r_pos3d = rl_sel_pos3d[hyp_selpt_ids.view(-1)].view(-1, 4, 3)
 
@@ -247,7 +242,7 @@ class FastPnPLoss(nn.Module):
             h_repj_err = self.hypo_repj_errs(h_Rts, q_sel_pos2d, rl_sel_pos3d, q_K)
         else:
             # re-projection error using references points with ground-truth query pose
-            r_valid_idx = torch.where(rl_valid == True)[0]
+            r_valid_idx = torch.where(rl_valid is True)[0]
             r_valid_xyz = r_xyz[r_valid_idx, :].view(1, r_valid_idx.shape[0], 3)
             rl_valid_gt_pos2d = rl_gt_pos2d[r_valid_idx].view(1, -1, 2)
 

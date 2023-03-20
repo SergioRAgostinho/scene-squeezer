@@ -1,5 +1,4 @@
 from core_io.print_msg import notice_msg
-import numpy as np
 import torch
 import torch.nn as nn
 
@@ -10,7 +9,6 @@ from matcher.superglue_base import log_optimal_transport_safe
 
 
 class SuperGlueGNNMatcher(BaseMatcher):
-
     default_config = {
         "descriptor_dim": 256,
         "weights": "indoor",
@@ -39,7 +37,6 @@ class SuperGlueGNNMatcher(BaseMatcher):
         self.register_parameter("bin_score", bin_score)
 
     def get_score(self, desc0, desc1, optimal_transport=True):
-
         # Multi-layer Transformer network.
         desc0, desc1 = self.gnn(desc0, desc1)
 

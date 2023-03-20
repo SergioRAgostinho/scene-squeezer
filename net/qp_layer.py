@@ -1,7 +1,6 @@
 import torch
 import torch.nn as nn
 
-from core_dl.train_params import TrainParameters
 from core_io.meta_io import from_meta
 
 import cvxpy as cp
@@ -39,7 +38,6 @@ class QPLayer(nn.Module):
         self._set_qp_layer()
 
     def _set_qp_layer(self) -> None:
-
         kpt_num = 500 if self.debug else 600
 
         self.qp_max_input_keypoints = from_meta(self.args, "qp_max_input_keypoints", default=kpt_num)
@@ -113,7 +111,6 @@ class QPLayer(nn.Module):
         )
 
         try:
-
             (solution,) = self.qp_layer(
                 rbf_kernel_sqrt.squeeze(0),
                 dist_score_subset.unsqueeze(-1),

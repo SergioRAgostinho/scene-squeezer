@@ -1,5 +1,4 @@
-import torch, dgl, pickle, os
-import numpy as np
+import torch
 import torch.nn as nn
 import torch.nn.functional as F
 from core_dl.torch_vision_ext import UnNormalize
@@ -90,7 +89,6 @@ class ResQuantGem(nn.Module):
 
 
 if __name__ == "__main__":
-
     resnet = ResQuantGem("/mnt/hosthome/Projects/pretrained_model/Resnet101-AP-GeM-LM18.pt")
 
     # simple test

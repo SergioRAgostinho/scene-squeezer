@@ -1,19 +1,11 @@
-from pickle import TRUE
-import numpy as np
 import torch
 import torch.nn as nn
 
-import cv2
-import random
 
 from core_io.meta_io import from_meta
 import core_3dv.camera_operator_gpu as cam_opt_gpu
-from dataset.common.base_data_source import ClipMeta, Pt2dObs
 from dataset.common.gt_corres_torch import corres_pos_from_pairs
-from einops import asnumpy
-from core_dl.expr_ctx import ExprCtx
-from net.loss import DiffBinarizer
-from core_3dv.weighted_dlt_pnp import DLT_P, DLT_RT
+from core_3dv.weighted_dlt_pnp import DLT_P
 
 
 def compute_selected_inliers(rl2q_2d_err, r_sel_alpha, alpha_thres=0.5, reproj_inlier_thres=5):
@@ -49,7 +41,6 @@ class DLTPnPLoss(nn.Module):
         q_dim_hw: tuple,
         r2q_matches,
     ) -> dict:
-
         cur_dev = torch.cuda.current_device()
         r_alpha_b = r_alpha.to(cur_dev)
 
@@ -59,7 +50,7 @@ class DLTPnPLoss(nn.Module):
 
         # filtering r2q_matches
         r2q_valid_flags = rl_valid[r2q_matches[:, 0]]
-        r2q_valid_idx = torch.where(r2q_valid_flags == True)[0]
+        r2q_valid_idx = torch.where(r2q_valid_flags is True)[0]
         r2q_matches = r2q_matches[r2q_valid_idx]
 
         # compute the err of r2q with gt pose
@@ -88,7 +79,6 @@ class DLTPnPLoss(nn.Module):
         inliers = rl2q_2d_err[sel_pts] < self.dlt_inlier_proj_thres
 
         if rl2q_2d_err_mask.sum() > 6 and inliers.shape[0] > 16:
-
             if not self.full_repj_loss:
                 est_P = DLT_P(
                     q_sel_pos2d[rl2q_2d_err_mask], r_sel_pos3d[rl2q_2d_err_mask], r_sel_alpha[rl2q_2d_err_mask]
@@ -108,7 +98,6 @@ class DLTPnPLoss(nn.Module):
             )
 
         else:
-            inlier_ratios = 0
             r2q_repj_err = torch.zeros(1, dtype=outlier_loss.dtype, device=outlier_loss.device)
 
         return outlier_loss, r2q_repj_err, rl2q_2d_err, sel_inlier_ratios

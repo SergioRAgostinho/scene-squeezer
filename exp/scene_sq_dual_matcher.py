@@ -13,7 +13,6 @@ def measure_r2q_inlier_ratio(q_K, q_Tcw, q_pos2d, r_xyz, r2q_matches_valid, rpj_
 
 
 def forward_dual_matcher(self, input: list, return_type="train"):
-
     # freeze_bn_layer(self.q2r)
     self.q2r.eval()
     self.sqz.eval()
@@ -34,7 +33,6 @@ def forward_dual_matcher(self, input: list, return_type="train"):
     vr_metas, vr_pt2d = sel_subset_clip(fq_metas, vr_idx), sel_subset_obs2d(fq_pt2d, vr_idx)
 
     # step 1: build scene representation and squeeze the points ----------------------------------------------------
-    res_dict = dict()
     with torch.cuda.device(self.device_of(self.sqz)) as _, torch.no_grad() as _:
         log_var, r_kernel, r_xyz, r_feats = self.squeeze_scene_pts(
             vr_in=(vr_metas, vr_pt2d), anchor_in=(r_metas, r_pt2d, r_pt3d), learnt_kernel=False
@@ -120,7 +118,7 @@ def forward_dual_matcher(self, input: list, return_type="train"):
         total_loss = 0
 
         for q_i in range(min(q_metas.num_frames(), 3)):
-            if gt_r2qs[q_i] == None:
+            if gt_r2qs[q_i] is None:
                 continue
 
             r2q_score = self.dual_matcher.get_score(r_feats, q_sp_feats[q_i], optimal_transport=True)
@@ -132,7 +130,7 @@ def forward_dual_matcher(self, input: list, return_type="train"):
 
             # reproj error: ref to query
             repj_r_pos2d, repj_r_depth = cam_opt_gpu.reproject(q_metas.Tcws[q_i], q_metas.K[q_i], r_xyz)
-            repj_r2q_visible = cam_opt_gpu.is_in_t(repj_r_pos2d, repj_r_depth, dim_hw=[1024, 1024])
+            cam_opt_gpu.is_in_t(repj_r_pos2d, repj_r_depth, dim_hw=[1024, 1024])
             r2q_matches_v_idx = torch.where(r2q_matches[:, 1] > 0)[0]
             r2q_matches_valids = r2q_matches[r2q_matches_v_idx, :].long()
 

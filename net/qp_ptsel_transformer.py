@@ -1,12 +1,6 @@
-from core_io.serialize import dump_pickle
-from typing import List, Tuple
-from numpy.lib.arraysetops import isin
-
 import torch
-from torch import tensor
 from core_io.meta_io import *
-from torch_scatter import scatter
-from einops import rearrange, repeat, asnumpy
+from einops import rearrange
 
 from exp.scene_sq_utils import move_to_origin, normalize_3dpts
 from net.pt_transformer import *
@@ -16,16 +10,9 @@ import torch.nn as nn
 import numpy as np
 from torch.nn.parameter import Parameter
 
-from matcher.superglue_matcher import BaseMatcher, SuperGlueMatcher
-from dataset.common.hloc_db import Pt2dObs, Pt3dObs
-from SuperGluePretrainedNetwork.models.superglue import normalize_keypoints
 
 import torch.nn.functional as F
-import time
 
-import core_3dv.camera_operator_gpu as cam_opt_gpu
-from core_dl.torch_ext import batch_sel_3d
-from dataset.common.base_data_source import ClipMeta, Pt2dObs, Pt3dObs
 from core_math.matrix_sqrt import sqrt_newton_schulz_autograd
 
 
@@ -160,7 +147,6 @@ class PointSelection(nn.Module):
         return qp_soln_padded
 
     def get_qp_energy(self, kernel, dist_score, alpha, sel_idx=None):
-
         if sel_idx is not None:
             sel_dist_score = dist_score.view(-1)[sel_idx]
             sel_kernel = kernel[sel_idx, :]

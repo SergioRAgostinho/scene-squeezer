@@ -18,9 +18,7 @@
 Used in [A Framework For Differentiable Discovery of Graph Algorithms](https://openreview.net/pdf?id=5UvvKsBTDcR).
 """
 
-import numpy as np
 import torch
-import torch.nn as nn
 
 
 def argmin_khot(score_mat, k):

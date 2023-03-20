@@ -1,9 +1,4 @@
-from comet_ml import Experiment
-from pytorch_lightning import callbacks, loggers, trainer
-from pytorch_lightning.callbacks.model_checkpoint import ModelCheckpoint
-import pytorch_lightning as pl
-
-import torch, argparse, sys
+import torch, argparse
 
 torch.manual_seed(1000)
 
@@ -12,11 +7,9 @@ from exp.scene_sq_box import SceneSQBox
 from exp.scene_sq_visualizer import get_corres_ref_2d
 from net.scene_sq import corres_pos_from_pairs
 from net.qp_layer import QPLayer
-from dataset.data_module import RankedDataModule, CachedDataModule
+from dataset.data_module import RankedDataModule
 from core_dl.get_host_name import get_host_name
 from core_io.print_msg import *
-from core_dl.lightning_logger import LightningLogger, PeriodicCheckpoint
-from core_dl.lightning_trainer import create_pl_trainer
 from core_3dv.quaternion import quaternion2rot
 from core_math.transfom import rotation_from_matrix
 

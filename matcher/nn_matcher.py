@@ -72,7 +72,7 @@ def _similarity_matcher(descriptors1, descriptors2, threshold=0.9):
     sim = descriptors1 @ descriptors2.t()
     nn_sim, nn12 = torch.max(sim, dim=1)
     nn_dist = torch.sqrt(2 - 2 * nn_sim)
-    nn21 = torch.max(sim, dim=0)[1]
+    torch.max(sim, dim=0)[1]
     ids1 = torch.arange(0, sim.shape[0], device=device)
     mask = nn_sim >= threshold
     matches = torch.stack([ids1[mask], nn12[mask]])

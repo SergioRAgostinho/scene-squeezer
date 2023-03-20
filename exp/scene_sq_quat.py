@@ -1,5 +1,4 @@
 from exp.scene_sq_unified_ptsel_box import *
-import math
 
 # import ipdb
 
@@ -13,7 +12,6 @@ def measure_r2q_inlier_ratio(q_K, q_Tcw, q_pos2d, r_xyz, r2q_matches_valid, rpj_
 
 
 def forward_soft_quant(self, input: list, return_type="train"):
-
     # freeze_bn_layer(self.q2r)
     self.q2r.eval()
     self.sqz.eval()
@@ -35,7 +33,6 @@ def forward_soft_quant(self, input: list, return_type="train"):
     vr_metas, vr_pt2d = sel_subset_clip(fq_metas, vr_idx), sel_subset_obs2d(fq_pt2d, vr_idx)
 
     # step 1: build scene representation and squeeze the points ----------------------------------------------------
-    res_dict = dict()
     with torch.cuda.device(self.device_of(self.sqz)) as _, torch.no_grad() as _:
         log_var, r_kernel, r_xyz, r_ori_feats = self.squeeze_scene_pts(
             vr_in=(vr_metas, vr_pt2d), anchor_in=(r_metas, r_pt2d, r_pt3d), learnt_kernel=False

@@ -1,6 +1,6 @@
 import torch
 import numpy as np
-from typing import Iterable, List, Tuple, Union
+from typing import List, Tuple, Union
 
 Scalar = Union[int, float]
 Tensor = torch.Tensor
@@ -27,7 +27,6 @@ def batch_sel_3d(x, dim, index):
 
 
 def index_of_elements(a, elements):
-
     a_ = a.cpu().numpy() if isinstance(a, torch.Tensor) else a
     elements_ = elements.cpu().numpy() if isinstance(elements, torch.Tensor) else elements
 

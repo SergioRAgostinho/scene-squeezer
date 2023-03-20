@@ -1,19 +1,13 @@
-from core_dl.module_util import freeze_bn_layer
-from itertools import chain
-from numpy import bool_
-
 import torch.cuda
 import exp.scene_sq_visualizer as sq_vis
 from core_dl.lightning_logger import LightningLogger
 from core_dl.lightning_model import BaseLightningModule
 from core_dl.train_params import TrainParameters
 from dataset.common.split_scene import sel_subset_clip, sel_subset_obs2d
-from net.dlt_pnp_loss import DLTPnPLoss
 from net.fast_pnp_loss import FastPnPLoss
-from net.qp_ptsel_transformer import PointSelection, compute_rbf_kernel
+from net.qp_ptsel_transformer import PointSelection
 from net.scene_mfuser_sq import *
-from core_dl.expr_ctx import ExprCtx
-from net.loss import distinctive_loss, exp_loss
+from net.loss import distinctive_loss
 from matcher.superglue_gnn_matcher import SuperGlueGNNMatcher
 from exp.scene_sq_dual_matcher import forward_dual_matcher
 from exp.scene_sq_quat import forward_soft_quant
@@ -25,7 +19,6 @@ class SceneSQPTSelBox(BaseLightningModule):
         super(SceneSQPTSelBox, self).__init__(params, auto_optimize=False, auto_assign_devices=False)
 
     def _set_network(self, args):
-
         # parameters
 
         self.stage = from_meta(args, "stage", default="d_K")
@@ -376,7 +369,6 @@ class SceneSQPTSelBox(BaseLightningModule):
         return loss["total_loss"]
 
     def validation_step(self, batch, batch_idx):
-
         if self.stage == "dual_matcher":
             loss, res_dict, _ = forward_dual_matcher(self, batch)
         elif self.stage == "soft_quant":

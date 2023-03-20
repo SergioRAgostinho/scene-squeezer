@@ -1,11 +1,9 @@
-import numpy as np
 import torch
 import core_3dv.camera_operator_gpu as cam_opt_gpu
 from net.scene_sq import corres_pos_from_pairs
 
 
 def mark_corres(pred_matches, q_pos_2d, q_K, q_Tcw, ref_3d_pos, thres=5):
-
     ref_3d_pos = ref_3d_pos.view(-1, 3)
     q_pos_2d = q_pos_2d.view(-1, 2)
     q_Tcw = q_Tcw.view(3, 4)

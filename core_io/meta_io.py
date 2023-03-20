@@ -3,7 +3,7 @@ import os
 import copy
 from core_io.print_msg import *
 from pathlib import Path
-from deprecated.sphinx import deprecated, versionadded, versionchanged
+from deprecated.sphinx import deprecated, versionadded
 
 """ Utilities for loading items in meta dictionary ---------------------------------------------------------------------
 """

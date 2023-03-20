@@ -1,7 +1,4 @@
 import cvxpy as cp
-from cvxpylayers.torch import CvxpyLayer
-import numpy as np
-import diffcp
 import torch
 from einops import asnumpy
 

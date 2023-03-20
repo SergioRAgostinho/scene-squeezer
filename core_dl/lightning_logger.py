@@ -1,19 +1,10 @@
 # -*- coding: utf-8 -*-
 
-import atexit
 import datetime
 import json
-from logging import log
-from os import remove
-import signal
-import socket
-import sys
-import warnings
 import numpy as np
-from numpy.lib.arraysetops import isin
 
 import torch
-from torch.autograd import Variable
 
 from core_dl.train_params import TrainParameters
 from core_io.print_msg import *
@@ -23,7 +14,6 @@ from typing import List
 import pytorch_lightning as pl
 from pytorch_lightning import loggers as pl_loggers
 from pytorch_lightning.callbacks import ModelCheckpoint
-from pytorch_lightning.callbacks.base import Callback
 from einops import asnumpy
 import comet_ml
 from torch.utils.tensorboard import SummaryWriter
@@ -346,7 +336,6 @@ class LightningLogger:
             loggers = [loggers]
 
         for vec, name in zip(vecs, names):
-
             if isinstance(vec, np.ndarray):
                 vec = torch.from_numpy(vec)
 

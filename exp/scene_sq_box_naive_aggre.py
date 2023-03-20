@@ -4,7 +4,7 @@ from core_dl.train_params import TrainParameters
 import exp.scene_sq_visualizer as sq_vis
 from exp.scene_sq_utils import *
 from net.scene_fuser_sq import *
-from dataset.common.base_data_source import Pt2dObs, Pt3dObs, ClipMeta
+from dataset.common.base_data_source import Pt2dObs, ClipMeta
 from dataset.common.split_scene import sel_subset_clip, sel_subset_obs2d
 from net.loss import distinctive_loss
 
@@ -114,7 +114,6 @@ class SceneSQBox(BaseLightningModule):
 
         # step 3: compute loss
         with torch.cuda.device(self.dev_ids[0]):
-
             q_indices = [k for k in res_dict.keys() if isinstance(k, int)]
             pred_r2q = r2q({q: res_dict[q]["matches"].cpu() for q in q_indices})
             pred_r2q_dist = r2q_reproj_dist(q_metas, q_pt2d, r_pt3d, pred_r2q)

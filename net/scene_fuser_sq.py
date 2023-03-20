@@ -1,18 +1,14 @@
-from core_io.serialize import dump_pickle
-from typing import List, Tuple
-from numpy.lib.arraysetops import isin
 import torch
 from torch import tensor
 from core_io.meta_io import *
 from torch_scatter import scatter
-from einops import rearrange, repeat, asnumpy
+from einops import rearrange, asnumpy
 from net.pt_transformer import *
 import torch.nn as nn
 import numpy as np
-from matcher.superglue_matcher import BaseMatcher, SuperGlueMatcher
+from matcher.superglue_matcher import SuperGlueMatcher
 from dataset.common.hloc_db import Pt2dObs, Pt3dObs
 import torch.nn.functional as F
-import time
 import core_3dv.camera_operator_gpu as cam_opt_gpu
 from core_dl.torch_ext import batch_sel_3d
 from dataset.common.base_data_source import ClipMeta, Pt2dObs, Pt3dObs
@@ -60,7 +56,6 @@ def register_q_frames(q2r: SuperGlueMatcher, q_meta: ClipMeta, q_pt2d: Pt2dObs, 
 
     res_dict = dict()
     for q_id in range(num_q_frames):
-
         q_input = {
             "pos": q_pt2d.uv[q_id],
             "feats": q_pt2d.feats[q_id],
@@ -297,7 +292,7 @@ def is_in_t(ref_2d_pts: torch.Tensor, ref_2d_depth: torch.Tensor, dim_hw):
 def encode_sp_feats(matcher, meta: ClipMeta, pt2d: Pt2dObs, split=True):
     cur_dev = torch.cuda.current_device()
     meta, pt2d = meta.to_tensor(cur_dev), pt2d.to_tensor(cur_dev)
-    N = meta.num_frames()
+    meta.num_frames()
 
     # encode features
     pt2d_npos_t = torch.cat([q.squeeze(0) for q in normalize_kpts_pos(meta.dims, pt2d.uv)])  # (VR, 2)
@@ -318,12 +313,11 @@ def encode_sp_feats(matcher, meta: ClipMeta, pt2d: Pt2dObs, split=True):
 
 
 def register_multi_q2r(matcher, vr_pt2d_feats, r_pt3d_feats, optimal_transport=False):
-    cur_dev = torch.cuda.current_device()
+    torch.cuda.current_device()
     _, C, R = r_pt3d_feats.shape
 
     v2r_scores = []
     for vr_id, vr_desc in enumerate(vr_pt2d_feats):
-
         v2rv_s = matcher.get_score(vr_desc, r_pt3d_feats, optimal_transport=optimal_transport)
 
         v2r_scores.append(v2rv_s)
