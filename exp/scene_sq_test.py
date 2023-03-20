@@ -1,20 +1,17 @@
 import argparse
-
-import torch
-
-torch.manual_seed(1000)
-
+import os
 from pathlib import Path
 
 import numpy as np
 import pycolmap
+import torch
 from dataset.data_module import RankedDataModule
 from tqdm import tqdm
 
 from core_3dv.quaternion import quaternion2rot
 from core_dl.get_host_name import get_host_name
 from core_dl.train_params import TrainParameters
-from core_io.print_msg import *
+from core_io.print_msg import notice_msg
 from core_math.transfom import rotation_from_matrix
 from exp.scene_sq_box import SceneSQBox
 from exp.scene_sq_visualizer import get_corres_ref_2d
@@ -23,6 +20,7 @@ from net.scene_sq import corres_pos_from_pairs
 
 # sys.path.append('/mnt/Exp_fast/tools/Hierarchical-Localization')
 # sys.path.append('/mnt/Exp_fast/tools/Hierarchical-Localization/third_party')
+torch.manual_seed(1000)
 
 
 def get_parser() -> argparse.ArgumentParser:

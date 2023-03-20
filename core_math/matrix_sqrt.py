@@ -60,7 +60,7 @@ def sqrt_newton_schulz_autograd(A, numIters, dtype):
     normA = A.mul(A).sum(dim=1).sum(dim=1).sqrt()
 
     Y = A.div(normA.view(batchSize, 1, 1).expand_as(A))
-    I = Variable(
+    I_ = Variable(
         torch.eye(dim, device=device).view(1, dim, dim).repeat(batchSize, 1, 1).type(dtype), requires_grad=False
     )
     Z = Variable(
@@ -68,7 +68,7 @@ def sqrt_newton_schulz_autograd(A, numIters, dtype):
     )
 
     for i in range(numIters):
-        T = 0.5 * (3.0 * I - Z.bmm(Y))
+        T = 0.5 * (3.0 * I_ - Z.bmm(Y))
         Y = Y.bmm(T)
         Z = T.bmm(Z)
     sA = Y * torch.sqrt(normA).view(batchSize, 1, 1).expand_as(A)
@@ -83,10 +83,10 @@ def sqrt_newton_schulz(A, numIters, dtype):
     dim = A.shape[1]
     normA = A.mul(A).sum(dim=1).sum(dim=1).sqrt()
     Y = A.div(normA.view(batchSize, 1, 1).expand_as(A))
-    I = torch.eye(dim, dim).view(1, dim, dim).repeat(batchSize, 1, 1).type(dtype)
+    I_ = torch.eye(dim, dim).view(1, dim, dim).repeat(batchSize, 1, 1).type(dtype)
     Z = torch.eye(dim, dim).view(1, dim, dim).repeat(batchSize, 1, 1).type(dtype)
     for i in range(numIters):
-        T = 0.5 * (3.0 * I - Z.bmm(Y))
+        T = 0.5 * (3.0 * I_ - Z.bmm(Y))
         Y = Y.bmm(T)
         Z = T.bmm(Z)
     sA = Y * torch.sqrt(normA).view(batchSize, 1, 1).expand_as(A)
@@ -100,11 +100,11 @@ def lyap_newton_schulz(z, dldz, numIters, dtype):
     dim = z.shape[1]
     normz = z.mul(z).sum(dim=1).sum(dim=1).sqrt()
     a = z.div(normz.view(batchSize, 1, 1).expand_as(z))
-    I = torch.eye(dim, dim).view(1, dim, dim).repeat(batchSize, 1, 1).type(dtype)
+    I_ = torch.eye(dim, dim).view(1, dim, dim).repeat(batchSize, 1, 1).type(dtype)
     q = dldz.div(normz.view(batchSize, 1, 1).expand_as(z))
     for i in range(numIters):
-        q = 0.5 * (q.bmm(3.0 * I - a.bmm(a)) - a.transpose(1, 2).bmm(a.transpose(1, 2).bmm(q) - q.bmm(a)))
-        a = 0.5 * a.bmm(3.0 * I - a.bmm(a))
+        q = 0.5 * (q.bmm(3.0 * I_ - a.bmm(a)) - a.transpose(1, 2).bmm(a.transpose(1, 2).bmm(q) - q.bmm(a)))
+        a = 0.5 * a.bmm(3.0 * I_ - a.bmm(a))
     dlda = 0.5 * q
     return dlda
 

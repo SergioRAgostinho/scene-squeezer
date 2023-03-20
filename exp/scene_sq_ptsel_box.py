@@ -1,8 +1,12 @@
 import time
 from itertools import chain
+from pathlib import Path
+from typing import Tuple
 
+import numpy as np
 import torch.cuda
 from dataset.common.split_scene import sel_subset_clip, sel_subset_obs2d
+from einops import asnumpy
 from scipy.linalg import sqrtm
 
 import exp.scene_sq_visualizer as sq_vis
@@ -10,9 +14,21 @@ from core_dl.expr_ctx import ExprCtx
 from core_dl.lightning_logger import LightningLogger
 from core_dl.lightning_model import BaseLightningModule
 from core_dl.train_params import TrainParameters
+from core_io.meta_io import from_meta
+from core_io.print_msg import err_msg, notice_msg
+from matcher.superglue_matcher import SuperGlueMatcher
 from net.fast_pnp_loss import FastPnPLoss
 from net.qp_ptsel import PointSelection
-from net.scene_fuser_sq import *
+from net.scene_fuser_sq import (
+    K_sqrt_placeholder,
+    SceneSqueezerWithTestQueries,
+    dict2obs,
+    encode_sp_feats,
+    extract_matches,
+    extract_matches_r2q,
+    r2q,
+    register_multi_q2r,
+)
 
 
 class SceneSQPTSelBox(BaseLightningModule):

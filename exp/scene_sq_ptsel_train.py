@@ -1,22 +1,20 @@
 import argparse
-
-import torch
-from pytorch_lightning import trainer
-
-torch.manual_seed(1000)
 from pathlib import Path
 
+import torch
 from dataset.data_module import CachedDataModule, RankedDataModule
 
 from core_dl.get_host_name import get_host_name
 from core_dl.lightning_logger import LightningLogger
 from core_dl.lightning_trainer import create_pl_trainer
 from core_dl.train_params import TrainParameters
-from core_io.print_msg import *
+from core_io.print_msg import notice_msg
 from exp.scene_sq_unified_ptsel_box import SceneSQPTSelBox
 
 # sys.path.append('/mnt/Exp_fast/tools/Hierarchical-Localization')
 # sys.path.append('/mnt/Exp_fast/tools/Hierarchical-Localization/third_party')
+
+torch.manual_seed(1000)
 
 
 def get_parser() -> argparse.ArgumentParser:

@@ -1,15 +1,27 @@
 # from _typeshed import Self
 # from math import dist
+from typing import Tuple
+
+import numpy as np
 import torch
 from dataset.common.base_data_source import ClipMeta, Pt2dObs, Pt3dObs
 from dataset.common.gt_corres_torch import *
 from dataset.common.split_scene import sel_subset_clip, sel_subset_obs2d
+from einops import asnumpy
 
 from core_dl.lightning_logger import LightningLogger
 from core_dl.lightning_model import BaseLightningModule
 from core_dl.train_params import TrainParameters
-from exp.scene_sq_utils import *
-from net.scene_fuser_multi_anchor import *
+from core_io.meta_io import from_meta
+from exp.scene_sq_utils import r2q, r2q_reproj_dist
+from matcher.superglue_matcher import SuperGlueMatcher
+from net.scene_fuser_multi_anchor import (
+    SceneSqueezerWithTestQueries,
+    encode_sp_feats,
+    extract_matches,
+    register_multi_q2r,
+    register_q_frames,
+)
 
 
 def dict2obs(info: dict):
@@ -117,13 +129,13 @@ class SceneSQBox(BaseLightningModule):
         with torch.cuda.device(self.dev_ids[0]):
             cur_dev = torch.cuda.current_device()
 
-            ref_pt3d, num_ref_pts = r_pt3d.xyz, r_pt3d.num_pts()
+            _, num_ref_pts = r_pt3d.xyz, r_pt3d.num_pts()
             q_indices = [k for k in res_dict.keys() if isinstance(k, int)]
 
             pred_r2q = r2q({q: res_dict[q]["matches"].cpu() for q in q_indices})
             pred_r2q_dist = r2q_reproj_dist(q_metas, q_pt2d, r_pt3d, pred_r2q)
 
-            rpj_avg_dist, rpj_avg_var = torch.zeros(num_ref_pts), torch.zeros(num_ref_pts)
+            rpj_avg_dist, _ = torch.zeros(num_ref_pts), torch.zeros(num_ref_pts)
             for r in pred_r2q_dist.keys():
                 rp = np.asarray(pred_r2q_dist[r]).ravel()
                 rp_valids = rp < 6.0
@@ -149,7 +161,7 @@ class SceneSQBox(BaseLightningModule):
         if loss is None:
             return torch.zeros(1, requires_grad=True)
 
-        self.log_dict({tag: l.item() for tag, l in loss.items()}, prog_bar=True)
+        self.log_dict({tag: l_.item() for tag, l_ in loss.items()}, prog_bar=True)
         var = torch.sqrt(res_dict["log_var"].exp()).cpu()
 
         # log

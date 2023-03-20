@@ -1,13 +1,25 @@
+from typing import Tuple
+
+import torch
 from dataset.common.base_data_source import ClipMeta, Pt2dObs
 from dataset.common.split_scene import sel_subset_clip, sel_subset_obs2d
+from einops import asnumpy
 
 import exp.scene_sq_visualizer as sq_vis
 from core_dl.lightning_logger import LightningLogger
 from core_dl.lightning_model import BaseLightningModule
 from core_dl.train_params import TrainParameters
-from exp.scene_sq_utils import *
+from core_io.meta_io import from_meta
+from exp.scene_sq_utils import dict2obs, r2q, r2q_reproj_dist
+from matcher.superglue_matcher import SuperGlueMatcher
 from net.loss import distinctive_loss
-from net.scene_fuser_sq import *
+from net.scene_fuser_sq import (
+    SceneSqueezerWithTestQueries,
+    encode_sp_feats,
+    extract_matches,
+    register_multi_q2r,
+    register_q_frames,
+)
 
 
 class SceneSQBox(BaseLightningModule):

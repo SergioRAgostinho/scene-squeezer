@@ -1,12 +1,14 @@
 import io
 
+import matplotlib.pyplot as plt
+import numpy as np
 import torch
 from einops import asnumpy
 from torchvision.utils import make_grid
 from visualizer.corres_plot import *
 
 from core_dl.torch_ext import *
-from core_dl.torch_vision_ext import *
+from core_dl.torch_vision_ext import tensor_to_vis
 from core_io.meta_io import from_meta, path_from_meta
 from exp.scene_sq_utils import get_corres_ref_2d_indices
 from net.scene_sq import corres_pos_from_pairs
@@ -20,10 +22,6 @@ def plot_to_ndarray(fig):
     w, h = fig.canvas.get_width_height()
     im = data.reshape((int(h), int(w), -1))
     return im
-
-
-def get_corres_ref_2d(sample, res, args: dict, use_gt_matches: bool = False):
-    pass
 
 
 def get_corres_ref_2d(sample, res, args: dict, use_gt_matches: bool = False):

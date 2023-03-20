@@ -1,17 +1,35 @@
+from pathlib import Path
+from typing import Tuple
+
+import numpy as np
 import torch.cuda
 from dataset.common.split_scene import sel_subset_clip, sel_subset_obs2d
+from einops import asnumpy
 
 import exp.scene_sq_visualizer as sq_vis
 from core_dl.lightning_logger import LightningLogger
 from core_dl.lightning_model import BaseLightningModule
 from core_dl.train_params import TrainParameters
+from core_io.meta_io import from_meta
+from core_io.print_msg import notice_msg
 from exp.scene_sq_dual_matcher import forward_dual_matcher
 from exp.scene_sq_quat import forward_soft_quant
 from matcher.superglue_gnn_matcher import SuperGlueGNNMatcher
+from matcher.superglue_matcher import SuperGlueMatcher
 from net.fast_pnp_loss import FastPnPLoss
 from net.loss import distinctive_loss
 from net.qp_ptsel_transformer import PointSelection
-from net.scene_mfuser_sq import *
+from net.scene_mfuser_sq import (
+    SceneSqueezerWithTestQueries,
+    SqueezerMixedTransformer,
+    dict2obs,
+    encode_sp_feats,
+    extract_matches,
+    extract_matches_r2q,
+    r2q,
+    r2q_reproj_dist,
+    register_multi_q2r,
+)
 from net.soft_quant import SoftQuant
 
 
@@ -190,7 +208,7 @@ class SceneSQPTSelBox(BaseLightningModule):
         vr_metas, vr_pt2d = sel_subset_clip(fq_metas, vr_idx), sel_subset_obs2d(fq_pt2d, vr_idx)
 
         # print('points: %d, num_frames: q:%d, v:%d, a:%d' % (r_pt3d.xyz.shape[0],
-        #                                                 q_metas.num_frames(), vr_metas.num_frames(), r_metas.num_frames()))
+        #   q_metas.num_frames(), vr_metas.num_frames(), r_metas.num_frames()))
 
         # step 1: build scene representation and squeeze the points ----------------------------------------------------
         res_dict = dict()
@@ -358,7 +376,7 @@ class SceneSQPTSelBox(BaseLightningModule):
             return torch.zeros(1, requires_grad=True).to(self.dev_ids[0])
 
         if "reproj_loss" not in loss or loss["reproj_loss"] != 0:
-            self.log_dict({"train/" + k: l for k, l in loss.items()}, prog_bar=True)
+            self.log_dict({"train/" + k: l_ for k, l_ in loss.items()}, prog_bar=True)
 
         # if self.on_visualize() and res_dict is not None:
         #     self.log_visualization(batch, res_dict)
@@ -383,7 +401,7 @@ class SceneSQPTSelBox(BaseLightningModule):
             return torch.zeros(1, requires_grad=True).to(self.dev_ids[0])
 
         if "reproj_loss" not in loss or loss["reproj_loss"] != 0:
-            self.log_dict({"valid/" + k: l for k, l in loss.items()}, prog_bar=False)
+            self.log_dict({"valid/" + k: l_ for k, l_ in loss.items()}, prog_bar=False)
 
         # if self.on_visualize() and res_dict is not None:
         #     self.log_visualization(batch, res_dict)

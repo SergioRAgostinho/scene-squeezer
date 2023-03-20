@@ -1,3 +1,5 @@
+from typing import List, Tuple
+
 import numpy as np
 import torch
 from dataset.common.base_data_source import ClipMeta, Pt2dObs, Pt3dObs

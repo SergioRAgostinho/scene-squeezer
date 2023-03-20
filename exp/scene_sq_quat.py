@@ -1,4 +1,15 @@
-from exp.scene_sq_unified_ptsel_box import *
+import torch
+from einops import asnumpy
+
+import core_3dv.camera_operator_gpu as cam_opt_gpu
+from exp.scene_sq_unified_ptsel_box import (
+    corres_pos_from_pairs,
+    dict2obs,
+    encode_sp_feats,
+    inverse_matches,
+    sel_subset_clip,
+    sel_subset_obs2d,
+)
 
 # import ipdb
 
@@ -92,9 +103,6 @@ def forward_soft_quant(self, input: list, return_type="train"):
         if self.training:
             optimizer = self.optimizers()
             optimizer.zero_grad()
-
-        if self.args.DEBUG:
-            r2q_pred_matches, r2q_losses, refined_gt_r2qs = [], [], []
 
         r2q_avg_inliers_ratios, r2q_visible_losses, r2q_invisible_losses = [], [], []
         total_loss = 0
