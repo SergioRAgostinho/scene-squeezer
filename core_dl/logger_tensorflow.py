@@ -5,7 +5,7 @@ import torch
 from torch.utils.tensorboard import SummaryWriter
 from torchvision.utils import make_grid
 
-from core_io.print_msg import *
+from core_io.print_msg import msg
 
 
 class TensorboardLogger:
@@ -38,7 +38,6 @@ class TensorboardLogger:
     def log(self, log_dict: dict):
         self.cur_iteration = log_dict["Iteration"]
         for key, log_value in log_dict.items():
-
             # Write the Scalar to tensorboard
             if key.startswith("Loss") or key.startswith("Accuracy") or key.startswith("Scalar"):
                 self.writer.add_scalar(key, float(log_value), self.cur_iteration)

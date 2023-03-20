@@ -1,6 +1,9 @@
 import torch
+from torch import nn
+from torch.autograd import Variable
+from torch.nn import functional as F
 
-from .backbones.resnet import *
+from .backbones.resnet import BasicBlock, Bottleneck, ResNet
 from .layers.pooling import GeneralizedMeanPoolingP
 
 

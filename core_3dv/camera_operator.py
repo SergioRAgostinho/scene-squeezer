@@ -40,7 +40,7 @@ def K_from_intrinsic(intrinsic: np.ndarray) -> np.ndarray:
 """
 
 
-def Rt(T: np.ndarray) -> [np.ndarray, np.ndarray]:
+def Rt(T: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     """
         Return the rotation matrix and the translation vector.
 
@@ -128,7 +128,7 @@ def camera_pose_inv(R: np.ndarray, t: np.ndarray) -> np.ndarray:
     return Twc[:3, :]
 
 
-def fov(fx: float, fy: float, h: float, w: float) -> [float, float]:
+def fov(fx: float, fy: float, h: float, w: float) -> tuple[float, float]:
     """
         Camera fov on x and y dimension
 
@@ -149,7 +149,7 @@ def fov(fx: float, fy: float, h: float, w: float) -> [float, float]:
 """
 
 
-def pi(K: np.ndarray, X: np.ndarray) -> [np.ndarray, np.ndarray]:
+def pi(K: np.ndarray, X: np.ndarray) -> tuple[np.ndarray, np.ndarray]:
     """
         Project the X in camera coordinates to the image plane
 

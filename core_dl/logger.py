@@ -3,6 +3,7 @@
 import atexit
 import datetime
 import json
+import os
 import signal
 import socket
 import sys
@@ -14,7 +15,7 @@ from torch.utils.tensorboard import SummaryWriter
 
 from core_dl.logger_file import FileLogger
 from core_dl.logger_tensorflow import TensorboardLogger
-from core_io.print_msg import *
+from core_io.print_msg import msg, notice_msg, warn_msg
 
 
 class Logger:
@@ -151,7 +152,6 @@ class Logger:
 
     def draw_architecture(self, model, input_shape, verbose=False):
         if "tensorboard" in self.loggers.keys():
-
             writer = self.loggers["tensorboard"].writer
             dtype = torch.FloatTensor
 

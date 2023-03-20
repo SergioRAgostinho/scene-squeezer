@@ -58,7 +58,7 @@ def translation_from_center(R: torch.Tensor, C: torch.Tensor) -> torch.Tensor:
     return t
 
 
-def camera_pose_inv(R: torch.Tensor, t: torch.Tensor) -> [torch.Tensor, torch.Tensor]:
+def camera_pose_inv(R: torch.Tensor, t: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
     """
         [Batch operations]
         Compute the inverse pose.
@@ -161,7 +161,7 @@ def transform_mat44(R: torch.Tensor, t: torch.Tensor) -> torch.Tensor:
     return out_mat44
 
 
-def Rt(T: torch.Tensor) -> [torch.Tensor, torch.Tensor]:
+def Rt(T: torch.Tensor) -> tuple[torch.Tensor, torch.Tensor]:
     """
         Return the rotation matrix and the translation vector.
 
@@ -256,7 +256,7 @@ def to_transformation_matrix(matrix: torch.Tensor) -> torch.Tensor:
 """
 
 
-def pi(K: torch.Tensor, X: torch.Tensor, eps=1e-5) -> [torch.Tensor, torch.Tensor]:
+def pi(K: torch.Tensor, X: torch.Tensor, eps=1e-5) -> tuple[torch.Tensor, torch.Tensor]:
     """
         Project the X in camera coordinates to the image plane
 

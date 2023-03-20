@@ -1,6 +1,6 @@
-# -*- coding: utf-8 -*-
+import os
 
-from core_io.print_msg import *
+from core_io.print_msg import msg
 
 
 class Singleton(type):

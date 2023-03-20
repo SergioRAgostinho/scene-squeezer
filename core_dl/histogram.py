@@ -2,7 +2,7 @@ from typing import Iterable, List, Tuple, Union
 
 import torch
 
-from .torch_ext import *
+from .torch_ext import histogramdd_bin_edges, ravel_multi_index
 
 Scalar = Union[int, float]
 Tensor = torch.Tensor
@@ -217,7 +217,7 @@ def histogramdd_edges(
     else:
         low, upp = low.expand(D), upp.expand(D)
 
-    return [torch.linspace(l, u, b + 1) for (l, u, b) in zip(low, upp, bins)]
+    return [torch.linspace(l_, u, b + 1) for (l_, u, b) in zip(low, upp, bins)]
 
 
 def histogram(

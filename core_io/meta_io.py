@@ -5,7 +5,7 @@ from pathlib import Path
 
 from deprecated.sphinx import deprecated, versionadded
 
-from core_io.print_msg import *
+from core_io.print_msg import notice_msg, warn_msg
 
 """ Utilities for loading items in meta dictionary ---------------------------------------------------------------------
 """

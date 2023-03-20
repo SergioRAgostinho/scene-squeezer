@@ -1,8 +1,9 @@
 import json
+import os
 import socket
 
 from core_dl.get_host_name import get_host_name
-from core_io.print_msg import *
+from core_io.print_msg import err_msg, msg, title_msg
 
 
 class TrainParameters:
@@ -83,7 +84,6 @@ class TrainParameters:
 
     def __init__(self, from_json_file=None):
         if from_json_file is not None:
-
             if not os.path.exists(from_json_file):
                 raise Exception(
                     err_msg("[TrainParameters] File %s is not exists." % from_json_file, obj=self, return_only=True)

@@ -27,7 +27,7 @@ def DLT_RT(K, uv, xyz, weight=None, soft_sign=True):
 
     fx, fy, cx, cy = K[0, 0], K[1, 1], K[0, 2], K[1, 2]
 
-    # construct matrix A: --------------------------------------------------------------------------------------------------
+    # construct matrix A: ----------------------------------------------------------------------------------------------
     h_xyz = torch.cat([xyz, torch.ones((M, 1), device=xyz.device)], dim=1)  # homogeneous coordinate, dim: (M, 4)
 
     A00 = h_xyz * fx  # [ x*f_x, y*f_x, z*f_x, 1*f_x], dim: (M, 4)

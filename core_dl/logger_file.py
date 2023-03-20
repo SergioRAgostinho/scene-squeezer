@@ -4,7 +4,7 @@ import datetime
 
 import torch
 
-from core_io.print_msg import *
+from core_io.print_msg import msg
 
 
 class FileLogger:
@@ -28,7 +28,6 @@ class FileLogger:
             self.keys.append(keys)
 
     def log(self, log_dict):
-
         current_time = datetime.datetime.now()
         self.cur_iteration = log_dict["Iteration"]
 

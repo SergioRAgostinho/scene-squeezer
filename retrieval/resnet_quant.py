@@ -4,15 +4,9 @@ import torch
 import torch.nn as nn
 import torch.nn.functional as F
 
+from core_dl.module_util import load_checkpoint
 from core_dl.torch_vision_ext import UnNormalize
-from core_io.meta_io import *
-from core_io.print_msg import *
-
-# from net.apg.nets.backbones.resnet import *
-# from net.apg.nets import create_model
-# from net.apg.utils import common
-# from net.apg.nets.layers.pooling import GeneralizedMeanPoolingP
-from net.soft_quant import *
+from net.soft_quant import MLP, DSQFunc
 from retrieval.rmac_resnet import ResNet_RMAC
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
@@ -33,7 +27,7 @@ class ResQuantGem(nn.Module):
         self.fix_backbone = fix_backbone
 
         # load pretrained resnet backbone
-        backbone_ckpt = common.load_checkpoint(pretrained_path)
+        backbone_ckpt = load_checkpoint(pretrained_path)
         net = create_model(pretrained="", **backbone_ckpt["model_options"])
         net.load_state_dict(backbone_ckpt["state_dict"])
         net.preprocess = backbone_ckpt.get("preprocess", net.preprocess)
