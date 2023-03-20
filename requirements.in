@@ -9,6 +9,7 @@ cvxpylayers
 Deprecated
 diffcp
 einops
+hfile
 lightning
 lmdb
 matplotlib

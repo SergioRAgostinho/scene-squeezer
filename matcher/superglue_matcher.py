@@ -5,6 +5,7 @@ from hloc.utils.base_model import dynamic_load
 from SuperGluePretrainedNetwork.models.superglue import *
 
 from matcher.matcher_base import BaseMatcher
+from matcher.superglue_matcher import arange_like, log_optimal_transport
 
 
 def get_feature_matcher(conf="superglue", device=None):
