@@ -5,6 +5,7 @@
 #    pip-compile
 #
 --extra-index-url https://download.pytorch.org/whl/cu117
+--find-links https://data.pyg.org/whl/torch-1.13.1+cu117.html
 
 aiohttp==3.8.4
     # via fsspec
@@ -374,6 +375,8 @@ torch==1.13.1+cu117
     #   pytorch-lightning
     #   torchmetrics
     #   torchvision
+torch-scatter==2.1.1+pt113cu117
+    # via -r requirements.in
 torchmetrics==0.11.4
     # via
     #   lightning
