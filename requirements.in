@@ -1,0 +1,23 @@
+--extra-index-url https://download.pytorch.org/whl/cu117
+
+black[jupyter]
+colorama
+comet_ml
+cvxpy
+cvxpylayers
+Deprecated
+diffcp
+einops
+lightning
+lmdb
+matplotlib
+numpy
+opencv-python
+paramiko
+pip-tools
+pycolmap
+ruff
+scipy
+torch==1.13.1+cu117
+torchvision==0.14.1+cu117
+tqdm
