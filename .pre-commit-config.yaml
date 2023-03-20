@@ -13,3 +13,11 @@ repos:
     rev: 6.12.3
     hooks:
       - id: pip-compile
+
+  - repo: local
+    hooks:
+    - id: black
+      name: Black
+      entry: black
+      language: python
+      types_or: [jupyter, python]
