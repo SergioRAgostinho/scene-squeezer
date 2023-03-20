@@ -1,12 +1,12 @@
-import torch
-import torch.nn as nn
-
-import cv2
 import random
 
-from core_io.meta_io import from_meta
-import core_3dv.camera_operator_gpu as cam_opt_gpu
+import cv2
+import torch
+import torch.nn as nn
 from dataset.common.base_data_source import ClipMeta, Pt2dObs
+
+import core_3dv.camera_operator_gpu as cam_opt_gpu
+from core_io.meta_io import from_meta
 
 
 class RandomizedPnPLoss(nn.Module):

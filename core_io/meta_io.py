@@ -1,9 +1,11 @@
+import copy
 import json
 import os
-import copy
-from core_io.print_msg import *
 from pathlib import Path
+
 from deprecated.sphinx import deprecated, versionadded
+
+from core_io.print_msg import *
 
 """ Utilities for loading items in meta dictionary ---------------------------------------------------------------------
 """

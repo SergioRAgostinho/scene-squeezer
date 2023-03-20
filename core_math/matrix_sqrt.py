@@ -2,10 +2,12 @@
 # Author: Subhransu Maji (smaji@cs.umass.edu)
 # Date: Dec 19, 2017
 import argparse
-import torch
-import numpy as np
 import time as tm
+
+import numpy as np
+import torch
 from torch.autograd import Variable
+
 
 # Compute error
 def compute_error(A, sA):

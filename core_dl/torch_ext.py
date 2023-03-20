@@ -1,6 +1,7 @@
-import torch
-import numpy as np
 from typing import List, Tuple, Union
+
+import numpy as np
+import torch
 
 Scalar = Union[int, float]
 Tensor = torch.Tensor

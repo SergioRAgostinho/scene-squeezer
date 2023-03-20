@@ -1,19 +1,15 @@
+import numpy as np
 import torch
-from core_io.meta_io import *
+import torch.nn as nn
+import torch.nn.functional as F
 from einops import rearrange
+from torch.nn.parameter import Parameter
 
+from core_io.meta_io import *
+from core_math.matrix_sqrt import sqrt_newton_schulz_autograd
 from exp.scene_sq_utils import move_to_origin, normalize_3dpts
 from net.pt_transformer import *
 from net.qp_layer_cholesky import get_qp_layer
-
-import torch.nn as nn
-import numpy as np
-from torch.nn.parameter import Parameter
-
-
-import torch.nn.functional as F
-
-from core_math.matrix_sqrt import sqrt_newton_schulz_autograd
 
 
 def compute_rbf_kernel(in_feats, rbf_sigma=1.0):

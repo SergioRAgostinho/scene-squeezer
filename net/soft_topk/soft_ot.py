@@ -19,8 +19,8 @@ Created on Thu Feb  6 13:02:31 2020
 """
 
 import torch
-from torch.autograd import Function
 import torch.nn.functional as F
+from torch.autograd import Function
 
 # pylint: skip-file
 

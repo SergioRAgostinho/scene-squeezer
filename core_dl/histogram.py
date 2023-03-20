@@ -1,6 +1,7 @@
+from typing import Iterable, List, Tuple, Union
+
 import torch
 
-from typing import Iterable, List, Tuple, Union
 from .torch_ext import *
 
 Scalar = Union[int, float]
@@ -359,8 +360,9 @@ def marginalize(hist: Tensor, dim: Union[int, Shape], keep: bool = False) -> Ten
 
 
 if __name__ == "__main__":  # bad practice
-    import numpy as np
     import timeit
+
+    import numpy as np
 
     print("CPU")
     print("---")

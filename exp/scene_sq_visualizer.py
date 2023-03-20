@@ -1,14 +1,15 @@
-import torch
-
-from core_io.meta_io import from_meta, path_from_meta
-from core_dl.torch_vision_ext import *
-from torchvision.utils import make_grid
-from core_dl.torch_ext import *
-from net.scene_sq import corres_pos_from_pairs
-from exp.scene_sq_utils import get_corres_ref_2d_indices
-from einops import asnumpy
-from visualizer.corres_plot import *
 import io
+
+import torch
+from einops import asnumpy
+from torchvision.utils import make_grid
+from visualizer.corres_plot import *
+
+from core_dl.torch_ext import *
+from core_dl.torch_vision_ext import *
+from core_io.meta_io import from_meta, path_from_meta
+from exp.scene_sq_utils import get_corres_ref_2d_indices
+from net.scene_sq import corres_pos_from_pairs
 
 
 def plot_to_ndarray(fig):

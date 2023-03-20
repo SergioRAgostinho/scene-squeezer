@@ -1,7 +1,8 @@
 import pytorch_lightning as pl
-from core_io.print_msg import title_msg
-from core_dl.train_params import TrainParameters
+
 from core_dl.lightning_logger import LightningLogger, PeriodicCheckpoint
+from core_dl.train_params import TrainParameters
+from core_io.print_msg import title_msg
 
 
 def create_pl_trainer(

@@ -1,10 +1,11 @@
 # -*- coding: utf-8 -*-
+import shutil
+from collections import OrderedDict, deque
+
 import torch
 import torch.nn as nn
-import shutil
 from torch.autograd import Variable
-from collections import OrderedDict
-from collections import deque
+
 from core_io.print_msg import warn_msg
 
 
@@ -103,14 +104,14 @@ def assign_layer_tags(module: torch.nn.Module):
     q = deque()
 
     # Add first submodules to queue
-    for (name, module) in module.modules():
+    for name, module in module.modules():
         setattr(module, "tag", name)
         q.append(module)
 
     while len(q) != 0:
         front_module = q.popleft()
         module_tag = getattr(front_module, "tag")
-        for (name, submodule) in front_module.modules().items():
+        for name, submodule in front_module.modules().items():
             setattr(submodule, "tag", module_tag + "." + name)
             q.append(submodule)
 

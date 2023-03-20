@@ -1,11 +1,12 @@
 import numpy as np
 import torch
-import core_3dv.camera_operator_gpu as cam_opt_gpu
-from core_dl.torch_ext import index_of_elements
-from einops import asnumpy
-from SuperGluePretrainedNetwork.models.superglue import normalize_keypoints
 from dataset.common.base_data_source import ClipMeta, Pt2dObs, Pt3dObs
 from dataset.common.gt_corres_torch import *
+from einops import asnumpy
+from SuperGluePretrainedNetwork.models.superglue import normalize_keypoints
+
+import core_3dv.camera_operator_gpu as cam_opt_gpu
+from core_dl.torch_ext import index_of_elements
 
 
 def dict2obs(info: dict):

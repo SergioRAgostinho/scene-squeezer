@@ -1,18 +1,20 @@
 from typing import List, Tuple
-import torch
-from core_io.meta_io import *
-from torch_scatter import scatter
-from einops import rearrange, asnumpy
-from net.pt_transformer import *
-import torch.nn as nn
+
 import numpy as np
-from matcher.superglue_matcher import SuperGlueMatcher
-from dataset.common.hloc_db import Pt2dObs, Pt3dObs
-from SuperGluePretrainedNetwork.models.superglue import normalize_keypoints
+import torch
+import torch.nn as nn
 import torch.nn.functional as F
+from dataset.common.base_data_source import ClipMeta, Pt2dObs, Pt3dObs
+from dataset.common.hloc_db import Pt2dObs, Pt3dObs
+from einops import asnumpy, rearrange
+from SuperGluePretrainedNetwork.models.superglue import normalize_keypoints
+from torch_scatter import scatter
+
 import core_3dv.camera_operator_gpu as cam_opt_gpu
 from core_dl.torch_ext import batch_sel_3d
-from dataset.common.base_data_source import ClipMeta, Pt2dObs, Pt3dObs
+from core_io.meta_io import *
+from matcher.superglue_matcher import SuperGlueMatcher
+from net.pt_transformer import *
 
 
 def extract_matches(res: dict):

@@ -159,10 +159,11 @@ def DLT_P(uv, xyz, weight=None):
 
 
 if __name__ == "__main__":
-    from pathlib import Path
     import random
+    from pathlib import Path
 
     from dataset.data_module import CachedDataModule
+
     import core_3dv.camera_operator_gpu as cam_opt_gpu
     from core_math.transfom import euler_from_matrix
 

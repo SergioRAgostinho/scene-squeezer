@@ -1,19 +1,19 @@
+import warnings
+
 import torch
 import torch.nn as nn
 import torch.nn.functional as F
-from core_dl.torch_vision_ext import UnNormalize
-from core_io.print_msg import *
 
-from retrieval.rmac_resnet import ResNet_RMAC
+from core_dl.torch_vision_ext import UnNormalize
+from core_io.meta_io import *
+from core_io.print_msg import *
 
 # from net.apg.nets.backbones.resnet import *
 # from net.apg.nets import create_model
 # from net.apg.utils import common
 # from net.apg.nets.layers.pooling import GeneralizedMeanPoolingP
-
 from net.soft_quant import *
-from core_io.meta_io import *
-import warnings
+from retrieval.rmac_resnet import ResNet_RMAC
 
 warnings.filterwarnings("ignore", category=DeprecationWarning)
 

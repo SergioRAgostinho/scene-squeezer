@@ -1,11 +1,11 @@
-from core_io.print_msg import notice_msg
 import torch
 import torch.nn as nn
 
+from core_io.print_msg import notice_msg
 from matcher.matcher_base import BaseMatcher
 from matcher.superglue_base import *
-from matcher.superglue_matcher import SuperGlueMatcher
 from matcher.superglue_base import log_optimal_transport_safe
+from matcher.superglue_matcher import SuperGlueMatcher
 
 
 class SuperGlueGNNMatcher(BaseMatcher):

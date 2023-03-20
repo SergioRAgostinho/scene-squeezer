@@ -3,12 +3,12 @@ import inspect
 from pathlib import Path
 from typing import List
 
+import pytorch_lightning as pl
 
 from core_dl.expr_ctx import ExprCtx
 from core_dl.lightning_logger import LightningLogger
-from core_io.print_msg import *
 from core_dl.train_params import TrainParameters
-import pytorch_lightning as pl
+from core_io.print_msg import *
 
 
 def is_overridden_func(func):

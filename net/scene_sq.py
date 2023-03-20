@@ -1,14 +1,16 @@
 from typing import List, Tuple
+
+import numpy as np
 import torch
-from core_io.meta_io import *
-from torch_scatter import scatter
-from einops import rearrange, asnumpy
 
 # from net.pt_transformer import BasePointTransformer
 import torch.nn as nn
-import numpy as np
-from matcher.superglue_matcher import BaseMatcher
+from einops import asnumpy, rearrange
 from SuperGluePretrainedNetwork.models.superglue import normalize_keypoints
+from torch_scatter import scatter
+
+from core_io.meta_io import *
+from matcher.superglue_matcher import BaseMatcher
 from net.pt_transformer import BasePointTransformer
 
 

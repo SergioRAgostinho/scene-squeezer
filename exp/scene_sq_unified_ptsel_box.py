@@ -1,16 +1,17 @@
 import torch.cuda
+from dataset.common.split_scene import sel_subset_clip, sel_subset_obs2d
+
 import exp.scene_sq_visualizer as sq_vis
 from core_dl.lightning_logger import LightningLogger
 from core_dl.lightning_model import BaseLightningModule
 from core_dl.train_params import TrainParameters
-from dataset.common.split_scene import sel_subset_clip, sel_subset_obs2d
-from net.fast_pnp_loss import FastPnPLoss
-from net.qp_ptsel_transformer import PointSelection
-from net.scene_mfuser_sq import *
-from net.loss import distinctive_loss
-from matcher.superglue_gnn_matcher import SuperGlueGNNMatcher
 from exp.scene_sq_dual_matcher import forward_dual_matcher
 from exp.scene_sq_quat import forward_soft_quant
+from matcher.superglue_gnn_matcher import SuperGlueGNNMatcher
+from net.fast_pnp_loss import FastPnPLoss
+from net.loss import distinctive_loss
+from net.qp_ptsel_transformer import PointSelection
+from net.scene_mfuser_sq import *
 from net.soft_quant import SoftQuant
 
 

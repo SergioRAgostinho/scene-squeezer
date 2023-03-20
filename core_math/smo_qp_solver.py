@@ -1,10 +1,10 @@
-import torch
-import numpy as np
 from time import time
 
-from core_io.serialize import load_pickle
-
 import matplotlib.pyplot as plt
+import numpy as np
+import torch
+
+from core_io.serialize import load_pickle
 
 
 class SMO_QP:
@@ -189,8 +189,8 @@ if __name__ == "__main__":
     get_energy(cached_alpha)
 
     ########## cvxpy_layer alpha ##########
-    from net.qp_layer_cholesky import get_qp_layer
     from core_math.matrix_sqrt import sqrt_newton_schulz_autograd
+    from net.qp_layer_cholesky import get_qp_layer
 
     tic = time()
     qp_layer = get_qp_layer(max_qp_layer_feats, compression_ratio)

@@ -1,14 +1,13 @@
-import torch
-
-from retrieval.rmac_resnet import resnet101_rmac
-
-from core_dl.train_params import TrainParameters
-from core_dl.get_host_name import get_host_name
-from dataset.data_module import RankedDataModule, CachedDataModule
-
 import argparse
 from pathlib import Path
+
+import torch
+from dataset.data_module import CachedDataModule, RankedDataModule
 from tqdm import tqdm
+
+from core_dl.get_host_name import get_host_name
+from core_dl.train_params import TrainParameters
+from retrieval.rmac_resnet import resnet101_rmac
 
 
 def get_parser() -> argparse.ArgumentParser:

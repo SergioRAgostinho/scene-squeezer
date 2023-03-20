@@ -1,12 +1,13 @@
+from dataset.common.base_data_source import ClipMeta, Pt2dObs
+from dataset.common.split_scene import sel_subset_clip, sel_subset_obs2d
+
+import exp.scene_sq_visualizer as sq_vis
 from core_dl.lightning_logger import LightningLogger
 from core_dl.lightning_model import BaseLightningModule
 from core_dl.train_params import TrainParameters
-import exp.scene_sq_visualizer as sq_vis
 from exp.scene_sq_utils import *
-from net.scene_fuser_sq import *
-from dataset.common.base_data_source import Pt2dObs, ClipMeta
-from dataset.common.split_scene import sel_subset_clip, sel_subset_obs2d
 from net.loss import distinctive_loss
+from net.scene_fuser_sq import *
 
 
 class SceneSQBox(BaseLightningModule):

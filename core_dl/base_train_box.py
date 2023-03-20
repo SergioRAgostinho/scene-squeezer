@@ -10,8 +10,8 @@ from tqdm.autonotebook import tqdm
 import core_dl.module_util as dl_util
 from core_dl.expr_ctx import ExprCtx
 from core_dl.logger import Logger
-from core_io.print_msg import *
 from core_dl.train_params import TrainParameters
+from core_io.print_msg import *
 
 
 def is_overridden_func(func):
@@ -48,7 +48,6 @@ class BaseTrainBox:
     """
 
     def __init__(self, train_params: TrainParameters, load_optimizer=False):
-
         self.verbose_mode = train_params.VERBOSE_MODE
         self.train_params = train_params
         self.load_optimizer = load_optimizer
@@ -386,7 +385,6 @@ class BaseTrainBox:
 
         try:
             for epoch in range(0, self.train_params.MAX_EPOCHS):
-
                 train_loader, valid_loader = self.train_loader, self.valid_loader
                 progress = (
                     tqdm(total=len(train_loader), ncols=100, leave=False) if self.train_params.TQDM_PROGRESS else None
@@ -395,7 +393,6 @@ class BaseTrainBox:
                 self._start_of_train_epoch(epoch, itr)
 
                 for train_batch_idx, train_sample in enumerate(train_loader):
-
                     itr += 1
                     if self.train_params.TQDM_PROGRESS:
                         progress.update(1)
@@ -428,7 +425,6 @@ class BaseTrainBox:
 
                     # do validation
                     if self.check_valid_step(itr) and valid_loader is not None:
-
                         if self.train_params.TQDM_PROGRESS is not None:
                             progress.set_description("[Valid]")
 
@@ -478,7 +474,6 @@ class BaseTrainBox:
         title_msg("Running")
 
         try:
-
             # forward and backward
             log_dict = self._test_loop(valid_loader, max_test_itr)
 

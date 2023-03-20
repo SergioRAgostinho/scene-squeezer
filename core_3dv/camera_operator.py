@@ -1,7 +1,6 @@
 import numpy as np
 from numpy.linalg import inv as np_mat_inv
 
-
 """ Matrices -----------------------------------------------------------------------------------------------------------
 """
 

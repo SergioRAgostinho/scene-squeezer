@@ -2,8 +2,8 @@ import numpy as np
 import torch
 from hloc import match_features, matchers
 from hloc.utils.base_model import dynamic_load
-
 from SuperGluePretrainedNetwork.models.superglue import *
+
 from matcher.matcher_base import BaseMatcher
 
 

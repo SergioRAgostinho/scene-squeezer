@@ -1,19 +1,18 @@
+import time
 from itertools import chain
 
 import torch.cuda
+from dataset.common.split_scene import sel_subset_clip, sel_subset_obs2d
+from scipy.linalg import sqrtm
 
 import exp.scene_sq_visualizer as sq_vis
+from core_dl.expr_ctx import ExprCtx
 from core_dl.lightning_logger import LightningLogger
 from core_dl.lightning_model import BaseLightningModule
 from core_dl.train_params import TrainParameters
-from dataset.common.split_scene import sel_subset_clip, sel_subset_obs2d
 from net.fast_pnp_loss import FastPnPLoss
 from net.qp_ptsel import PointSelection
 from net.scene_fuser_sq import *
-from core_dl.expr_ctx import ExprCtx
-
-import time
-from scipy.linalg import sqrtm
 
 
 class SceneSQPTSelBox(BaseLightningModule):

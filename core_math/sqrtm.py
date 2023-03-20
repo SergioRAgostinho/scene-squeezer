@@ -1,7 +1,7 @@
-import torch
-from torch.autograd import Function
 import numpy as np
 import scipy.linalg
+import torch
+from torch.autograd import Function
 
 
 class MatrixSquareRoot(Function):

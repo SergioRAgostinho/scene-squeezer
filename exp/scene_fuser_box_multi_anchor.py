@@ -1,15 +1,15 @@
 # from _typeshed import Self
 # from math import dist
 import torch
+from dataset.common.base_data_source import ClipMeta, Pt2dObs, Pt3dObs
+from dataset.common.gt_corres_torch import *
+from dataset.common.split_scene import sel_subset_clip, sel_subset_obs2d
 
 from core_dl.lightning_logger import LightningLogger
 from core_dl.lightning_model import BaseLightningModule
 from core_dl.train_params import TrainParameters
-from dataset.common.gt_corres_torch import *
 from exp.scene_sq_utils import *
 from net.scene_fuser_multi_anchor import *
-from dataset.common.base_data_source import Pt2dObs, Pt3dObs, ClipMeta
-from dataset.common.split_scene import sel_subset_clip, sel_subset_obs2d
 
 
 def dict2obs(info: dict):

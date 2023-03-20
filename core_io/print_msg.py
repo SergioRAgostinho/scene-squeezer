@@ -3,7 +3,7 @@
 import os
 import shutil
 
-from colorama import Fore, Back, Style
+from colorama import Back, Fore, Style
 
 
 def title_msg(msg_str: str, emphasize=False):

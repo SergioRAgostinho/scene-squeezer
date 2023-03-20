@@ -1,5 +1,6 @@
-from exp.scene_sq_unified_ptsel_box import *
 import math
+
+from exp.scene_sq_unified_ptsel_box import *
 
 # import ipdb
 

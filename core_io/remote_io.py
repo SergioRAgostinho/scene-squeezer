@@ -1,8 +1,10 @@
-import paramiko
 import os
 from pathlib import Path
 from stat import S_ISDIR
+
+import paramiko
 from tqdm.autonotebook import tqdm
+
 from core_io.print_msg import *
 
 
@@ -193,7 +195,6 @@ class SFTPClient:
         to_local = Path(to_local)
 
         if self.is_dir(from_remote):
-
             if not to_local.is_dir():
                 if not to_local.exists():
                     to_local.mkdir(parents=True, exist_ok=False)
@@ -298,7 +299,6 @@ class SFTPClient:
         to_local = Path(to_local)
 
         if self.is_dir(from_remote):
-
             if not to_local.is_dir():
                 if not to_local.exists():
                     to_local.mkdir(parents=True, exist_ok=False)

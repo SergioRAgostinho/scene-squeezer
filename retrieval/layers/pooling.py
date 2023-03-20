@@ -1,8 +1,7 @@
 import torch
-
+import torch.nn.functional as F
 from torch.nn.modules import Module
 from torch.nn.parameter import Parameter
-import torch.nn.functional as F
 
 
 class GeneralizedMeanPooling(Module):

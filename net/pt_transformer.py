@@ -1,9 +1,10 @@
+from typing import Tuple
+
 import torch
-from einops import rearrange
 import torch.nn as nn
 import torch.nn.functional as F
-from point_transformer_ops.point_transformer_modules import PointTransformerBlock, TransitionUp, TransitionDown
-from typing import Tuple
+from einops import rearrange
+from point_transformer_ops.point_transformer_modules import PointTransformerBlock, TransitionDown, TransitionUp
 
 
 class SqueezerMixedTransformer(nn.Module):

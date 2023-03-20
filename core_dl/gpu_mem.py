@@ -1,10 +1,10 @@
-import gc
 import datetime
+import gc
 import inspect
 
+import numpy as np
 import torch
 import torch.nn as nn
-import numpy as np
 
 
 def modelsize(model, input, type_size=4):
@@ -134,7 +134,6 @@ class MemTracker(object):
         where_str = frameinfo.filename + " line " + str(frameinfo.lineno) + ": " + frameinfo.function
 
         with open(self.gpu_profile_fn, "a+") as f:
-
             if self.begin:
                 f.write(
                     f"GPU Memory Track | {datetime.datetime.now():%d-%b-%y-%H:%M:%S} |"

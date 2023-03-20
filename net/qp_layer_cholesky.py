@@ -1,12 +1,11 @@
+import cvxpy as cp
+import diffcp
 import torch
 import torch.nn as nn
+from cvxpylayers.torch import CvxpyLayer
 
 from core_io.meta_io import from_meta
-
-import cvxpy as cp
-from cvxpylayers.torch import CvxpyLayer
 from core_math.matrix_sqrt import sqrt_newton_schulz_autograd
-import diffcp
 
 
 def get_qp_layer(num_features, compression_ratio=0.7):

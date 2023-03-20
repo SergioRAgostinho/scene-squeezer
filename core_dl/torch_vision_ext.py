@@ -1,9 +1,9 @@
 # -*- coding: utf-8 -*-
 
-from einops.einops import rearrange
-import torch
 import cv2
 import numpy as np
+import torch
+from einops.einops import rearrange
 
 
 def colormap(tensor: torch.tensor, cmap="jet", clip_range=None, scale_each=True, chw_order=True):
