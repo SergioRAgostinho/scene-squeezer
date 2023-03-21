@@ -7,14 +7,15 @@ import torch.nn.functional as F
 from dataset.common.base_data_source import ClipMeta, Pt2dObs, Pt3dObs
 from dataset.common.hloc_db import Pt2dObs, Pt3dObs
 from einops import asnumpy, rearrange
+from evaluator.trajectory_eval import rel_distance, rel_R_deg
 from SuperGluePretrainedNetwork.models.superglue import normalize_keypoints
 from torch_scatter import scatter
 
 import core_3dv.camera_operator_gpu as cam_opt_gpu
 from core_dl.torch_ext import batch_sel_3d
-from core_io.meta_io import *
+from core_io.meta_io import from_meta
 from matcher.superglue_matcher import SuperGlueMatcher
-from net.pt_transformer import *
+from net.pt_transformer import BasePointTransformer
 
 
 def extract_matches(res: dict):
@@ -295,9 +296,6 @@ class Anchor2TestsFuser(nn.Module):
         x = self.final_fc(x).squeeze(-1)
 
         return {"attn_output": x, "attn_weight": prob}
-
-
-from evaluator.trajectory_eval import rel_distance, rel_R_deg
 
 
 def sel_nearest_anchor(q_tcw, anchor_tcws: list):

@@ -9,7 +9,7 @@ from einops import asnumpy, rearrange
 from SuperGluePretrainedNetwork.models.superglue import normalize_keypoints
 from torch_scatter import scatter
 
-from core_io.meta_io import *
+from core_io.meta_io import from_meta
 from matcher.superglue_matcher import BaseMatcher
 from net.pt_transformer import BasePointTransformer
 

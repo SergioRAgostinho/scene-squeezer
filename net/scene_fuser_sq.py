@@ -5,15 +5,17 @@ import torch.nn.functional as F
 from dataset.common.base_data_source import ClipMeta, Pt2dObs, Pt3dObs
 from dataset.common.hloc_db import Pt2dObs, Pt3dObs
 from einops import asnumpy, rearrange
+from evaluator.trajectory_eval import rel_distance, rel_R_deg
 from torch import tensor
 from torch_scatter import scatter
 
 import core_3dv.camera_operator_gpu as cam_opt_gpu
 from core_dl.torch_ext import batch_sel_3d
-from core_io.meta_io import *
-from exp.scene_sq_utils import *
+from core_io.meta_io import from_meta
+from core_io.print_msg import err_msg
+from exp.scene_sq_utils import move_to_origin, normalize_2d_pos, normalize_3dpts, normalize_kpts_pos
 from matcher.superglue_matcher import SuperGlueMatcher
-from net.pt_transformer import *
+from net.pt_transformer import BasePointTransformer
 
 
 def extract_matches(res: dict, key="matches0"):
@@ -260,9 +262,6 @@ class Anchor2TestsFuser(nn.Module):
         return {"attn_output": x, "attn_weight": prob}
 
 
-from evaluator.trajectory_eval import rel_distance, rel_R_deg
-
-
 def sel_nearest_anchor(q_tcw, anchor_tcws: list):
     """function for finding the nearest anchor frame."""
     assert len(anchor_tcws)
@@ -371,10 +370,11 @@ class SceneSqueezerWithTestQueries(nn.Module):
             r_pt2d_feats = rearrange(r_pt2d_feats, "b c r -> (b r) c")
             r_aggr_feats = aggr_pc_feats(r_pt2d_feats, r_pt3d_ids, aggr_method=self.aggre_method)
 
-            # r_sp_feats = torch.cat(r_pt2d.feats)
-            # r_aggr_ori_feats = aggr_pc_feats(r_sp_feats, r_pt3d_ids, aggr_method=self.aggre_method)
-            # r_aggr_ori_scores = aggr_pc_feats(torch.cat(r_pt2d.score).unsqueeze(-1), r_pt3d_ids,
-            #                                   aggr_method=self.aggre_method)
+            r_sp_feats = torch.cat(r_pt2d.feats)
+            r_aggr_ori_feats = aggr_pc_feats(r_sp_feats, r_pt3d_ids, aggr_method=self.aggre_method)
+            r_aggr_ori_scores = aggr_pc_feats(
+                torch.cat(r_pt2d.score).unsqueeze(-1), r_pt3d_ids, aggr_method=self.aggre_method
+            )
 
         pt3d_xyz = r_pt3d.xyz
         if self.move_to_origin:

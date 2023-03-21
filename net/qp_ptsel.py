@@ -5,11 +5,11 @@ import torch.nn.functional as F
 from einops import rearrange
 from torch.nn.parameter import Parameter
 
-from core_io.meta_io import *
+from core_io.meta_io import from_meta
 from core_math.cvxpy_qp_solver import CVXPY_QP, solve_qp_np
 from core_math.matrix_sqrt import sqrt_newton_schulz_autograd
 from exp.scene_sq_utils import move_to_origin, normalize_3dpts
-from net.pt_transformer import *
+from net.pt_transformer import BasePointTransformer
 from net.qp_layer_cholesky import get_qp_layer
 
 

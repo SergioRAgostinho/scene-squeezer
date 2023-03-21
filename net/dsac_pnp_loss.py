@@ -24,7 +24,10 @@
 #     valid_rl2q_2d_err = rl2q_2d_err[valid_refs]
 #     if valid_rl2q_2d_err.shape[0] == 0:
 #         return 0, None
-#     return torch.sum(valid_rl2q_2d_err < reproj_inlier_thres), torch.sum(valid_rl2q_2d_err < reproj_inlier_thres) / valid_rl2q_2d_err.shape[0]
+#     return (
+#           torch.sum(valid_rl2q_2d_err < reproj_inlier_thres),
+#           torch.sum(valid_rl2q_2d_err < reproj_inlier_thres) / valid_rl2q_2d_err.shape[0]
+#       )
 
 
 # class DSACPnPLoss(nn.Module):
@@ -40,7 +43,8 @@
 #         # inlier threshold in pixels
 #         self.reprj_inlier_thres = from_meta(args, 'dsac_reprj_inlier_thres', default=12)
 
-#         # alpha parameter of the soft inlier count; controls the softness of the hypotheses score distribution; lower means softer
+#         # alpha parameter of the soft inlier count; controls the softness of the hypotheses score distribution; lower
+#         # means softer
 #         self.reprj_inlier_alpha = from_meta(args, 'dsac_reprj_inlier_alpha', default=10.0)
 
 #         # beta parameter of the soft inlier count; controls the softness of the sigmoid; lower means softer
@@ -63,7 +67,8 @@
 
 #     def forward(
 #         self, r_xyz: torch.Tensor, r_alpha: torch.Tensor,
-#         q_pos_2d: torch.Tensor, q_K: torch.Tensor, q_gt_Tcw: torch.Tensor, q_dim_hw: tuple, r2q_matches: torch.Tensor):
+#         q_pos_2d: torch.Tensor,
+#         q_K: torch.Tensor, q_gt_Tcw: torch.Tensor, q_dim_hw: tuple, r2q_matches: torch.Tensor):
 
 #         cur_dev = torch.cuda.current_device()
 #         r_alpha_b = r_alpha.to(cur_dev)
@@ -84,16 +89,17 @@
 #         # extract 3D-2D correspondences
 #         r_sel_pos3d, q_sel_pos2d = corres_pos_from_pairs(r_xyz, q_pos_2d, r2q_matches)
 #         r_sel_alpha = r_alpha_b[r2q_matches[:, 0]]
-#         num_inliers, sel_inlier_ratios = compute_selected_inliers(rl2q_2d_err, r_sel_alpha, reproj_inlier_thres=self.reprj_inlier_thres)
+#         num_inliers, sel_inlier_ratios = compute_selected_inliers(
+#           rl2q_2d_err, r_sel_alpha, reproj_inlier_thres=self.reprj_inlier_thres)
 
 #         # outlier loss
 #         outlier_loss = rl2q_2d_err * r_alpha_b[r2q_matches[:, 0]]
 
-#         # condition check ----------------------------------------------------------------------------------------------
+#         # condition check --------------------------------------------------------------------------------------------
 #         if sel_inlier_ratios is None or num_inliers < 10:
 #             return None, None, None, None
 
-#         # dsac loss ----------------------------------------------------------------------------------------------------
+#         # dsac loss --------------------------------------------------------------------------------------------------
 #         q_gt_Tcw_inv = torch.eye(4)
 #         R_inv, t_inv = cam_opt_gpu.camera_pose_inv(q_gt_Tcw[:3, :3], q_gt_Tcw[:3, 3])
 #         q_gt_Tcw_inv[:3, :3] = R_inv

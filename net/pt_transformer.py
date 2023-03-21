@@ -75,8 +75,8 @@ class SqueezerMixedTransformer(nn.Module):
             del li_features, li_xyz
 
         if self.fix_encoder:
-            l_features = [l.detach() for l in l_features]
-            l_xyz = [l.detach() for l in l_xyz]
+            l_features = [l_.detach() for l_ in l_features]
+            l_xyz = [l_.detach() for l_ in l_xyz]
 
         # decoding dist_score
         o_feats = [None for _ in l_features]
